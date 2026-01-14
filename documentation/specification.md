@@ -22,10 +22,10 @@ Application should run as Linux service serving HTML files from filesystem using
 
 - HTTP 1.1 specification compliant (mostly)
 - extensive test suite
-- tui webserver bench and comparisons
-- deployment tools (Linux service, Docker)
+- deployment setups (Linux service, Docker)
 - file based configuration
 - file based routing
-- reverse proxy
+- (reverse proxy)
 - (caching)
 - (load balancing)
+- (tui webserver bench and comparisons)

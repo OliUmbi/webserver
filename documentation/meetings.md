@@ -1,6 +1,6 @@
 # Meetings
 
-## 14.01. Tuesday
+## 14.01. Wednesday
 09:30 - 10:00, 5.2B34
 
 ### Topics
@@ -17,4 +17,7 @@
   - documentation structure / approach validation
   - goal scope
 - feedback
+  - bench can be challenging
+  - parser can be intensive
 - next meeting
+  - recurring 09:30 - 10:00
