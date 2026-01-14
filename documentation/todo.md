@@ -10,6 +10,7 @@
 -[ ] cargo workspace setup
 -[ ] rework specification goal
 -[ ] define knowledge goals
+-[ ] define roadmap
 -[ ] note learned http 1.1 specs in knowledge
 -[ ] hardware / deployment
 -[ ] plan broad architecture designs
