@@ -17,6 +17,7 @@ coach meeting, 09:30 - 10:00
 ## 19.01. Monday
 
 feedback round, attendance required, 11:00 - 12:00
+present working webserver implementing most of HTTP 1.1 Specification
 
 ## 20.01. Tuesday
 

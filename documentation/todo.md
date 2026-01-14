@@ -4,9 +4,9 @@
 -[x] setup documentation
 -[x] plan meeting with coach
 -[x] implement webserver 
--[ ] prepare coach meeting
--[ ] complete diary for 12.01.
--[ ] complete diary for 13.01.
+-[x] prepare coach meeting
+-[x] complete diary for 12.01.
+-[x] complete diary for 13.01.
 -[ ] cargo workspace setup
 -[ ] rework specification goal
 -[ ] define knowledge goals
@@ -14,3 +14,4 @@
 -[ ] hardware / deployment
 -[ ] plan broad architecture designs
 -[ ] review https://github.com/uNetworking/h1spec
+-[ ] review coverage check https://pypi.org/project/httplint/

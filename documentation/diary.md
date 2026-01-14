@@ -2,7 +2,16 @@
 
 ## 12.01. Monday
 
+- introduction
+- repository setup
+- define specifications
+
 ## 13.01. Tuesday
+
+- implement prototype
+  - simple static get request serving HTML file
+- define project structure
+- plan next week and scope
 
 ## 14.01. Wednesday
 

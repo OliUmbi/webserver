@@ -19,7 +19,6 @@ Application should run as Linux service serving HTML files from filesystem using
 - Caching
 
 ## Goal
-[TODO]: // (move minimal prototype and steps somewhere else because here should be the overall goal and specifications on what to achieve)
 
 - HTTP 1.1 specification compliant (mostly)
 - extensive test suite
@@ -30,16 +29,3 @@ Application should run as Linux service serving HTML files from filesystem using
 - reverse proxy
 - (caching)
 - (load balancing)
-
-## Minimal Prototype
-
-- Port 80 binding
-- GET requests only
-- Static headers
-- Static HTML String
-
-## Assignment requirements implementation
-
-
-## Extensive Implementation
-
