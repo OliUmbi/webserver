@@ -8,11 +8,30 @@ pub struct Headers {
 }
 
 impl Headers {
-    pub fn new() -> Headers {
+    pub fn new() -> Self {
         Headers { values: HashMap::new() }
     }
 
-    pub fn add(&mut self, s: &str) -> Result<(), String> {
+    pub fn new_from_http(s: String) -> Result<Self, String> {
+        // todo review this maybe bad when no headers are specified
+
+        let mut headers = Headers::new();
+
+        for header in s.split("\r\n") {
+            match headers.add_from_str(header) {
+                Ok(_) => {}
+                Err(_) => return Err("Header incorrectly formatted".to_string())
+            }
+        }
+
+        Ok(headers)
+    }
+    
+    pub fn add(&mut self, name: &str, value: &str) {
+        self.values.insert(name.to_string(), value.to_string());
+    }
+
+    pub fn add_from_str(&mut self, s: &str) -> Result<(), String> {
         let header = s.split_once(":");
 
         if header.is_none() {
@@ -29,5 +48,9 @@ impl Headers {
         self.values.insert(name, value);
 
         Ok(())
+    }
+
+    pub fn to_http(&self) -> String {
+        self.values.iter().map(|header| format!("{}: {}", header.0, header.1)).collect::<Vec<String>>().join("\r\n")
     }
 }

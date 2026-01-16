@@ -144,4 +144,8 @@ impl StatusCode {
             StatusCode::NetworkAuthenticationRequired => "Network Authentication Required",
         }
     }
+    
+    pub fn to_http(&self) -> String {
+        format!("{} {}", self.code(), self.as_str())
+    }
 }

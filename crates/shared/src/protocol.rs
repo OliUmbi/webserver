@@ -10,4 +10,10 @@ impl Protocol {
             _ => None
         }
     }
+
+    pub fn to_http(&self) -> String {
+        match self {
+            Protocol::Http1_1 => "HTTP/1.1".to_string()
+        }
+    }
 }

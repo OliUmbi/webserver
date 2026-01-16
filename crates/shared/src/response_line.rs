@@ -13,4 +13,8 @@ impl ResponseLine {
             status
         }
     }
+    
+    pub fn to_http(&self) -> String {
+        format!("{} {}", self.protocol.to_http(), self.status.to_http())
+    }
 }
