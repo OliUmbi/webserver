@@ -15,7 +15,15 @@
 
 ## 14.01. Wednesday
 
+- meeting coach
+- reworked project structure
+- implemented http request model
+- implemented basic request handling
+
 ## 15.01. Thursday
+
+- implemented proper chunk buffer reading
+- reworked request model
 
 ## 16.01. Friday
 

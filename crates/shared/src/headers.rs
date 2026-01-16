@@ -1,5 +1,7 @@
 use std::collections::HashMap;
 
+// todo maybe add a HeaderName enum for known types
+// todo multiple headers with same name? combine idk spec: https://www.w3.org/Protocols/rfc2616/rfc2616-sec4.html#sec4.2
 #[derive(Debug)]
 pub struct Headers {
     values: HashMap<String, String>,
@@ -10,7 +12,7 @@ impl Headers {
         Headers { values: HashMap::new() }
     }
 
-    pub fn add(&mut self, s: String) -> Result<(), String> {
+    pub fn add(&mut self, s: &str) -> Result<(), String> {
         let header = s.split_once(":");
 
         if header.is_none() {

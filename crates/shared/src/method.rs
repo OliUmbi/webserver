@@ -88,6 +88,7 @@ impl Method {
         }
     }
 
+    // todo maybe change to Result
     pub fn from_str(s: &str) -> Option<Self> {
         match s.to_uppercase().as_str() {
             "ACL" => Some(Method::Acl),
