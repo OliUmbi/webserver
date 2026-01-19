@@ -7,8 +7,7 @@ pub enum Method {
     Delete,
     Connect,
     Options,
-    Trace,
-    Other(String)
+    Trace
 }
 
 impl Method {
@@ -22,22 +21,21 @@ impl Method {
             Method::Connect => "CONNECT",
             Method::Options => "OPTIONS",
             Method::Trace => "TRACE",
-            Method::Other(other) => other.as_str()
         }
     }
 
     // todo maybe change to Result
-    pub fn from_str(s: &str) -> Self {
+    pub fn from_str(s: &str) -> Option<Self> {
         match s.to_uppercase().as_str() {
-            "GET" => Method::Get,
-            "HEAD" => Method::Head,
-            "POST" => Method::Post,
-            "PUT" => Method::Put,
-            "DELETE" => Method::Delete,
-            "CONNECT" => Method::Connect,
-            "OPTIONS" => Method::Options,
-            "TRACE" => Method::Trace,
-            other => Method::Other(other.to_string())
+            "GET" => Some(Method::Get),
+            "HEAD" => Some(Method::Head),
+            "POST" => Some(Method::Post),
+            "PUT" => Some(Method::Put),
+            "DELETE" => Some(Method::Delete),
+            "CONNECT" => Some(Method::Connect),
+            "OPTIONS" => Some(Method::Options),
+            "TRACE" => Some(Method::Trace),
+            _ => None
         }
     }
 }

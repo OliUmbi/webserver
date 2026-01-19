@@ -26,7 +26,10 @@ fn handle_request(stream: &mut TcpStream) -> Response {
 
     let mut reader = BufReader::new(stream);
 
-    let (raw_request_line, raw_headers, body_already_read) = read_head(&mut reader).unwrap();
+    let (raw_request_line, raw_headers, body_already_read) = match read_head(&mut reader) {
+        Ok(head) => head,
+        Err(error) => return Response::error(StatusCode::BadRequest, error)
+    };
 
     let request_line = match RequestLine::new_from_http(raw_request_line) {
         Ok(request_line) => request_line,

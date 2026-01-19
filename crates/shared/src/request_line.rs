@@ -22,7 +22,10 @@ impl RequestLine {
         let mut components = s.split(" ");
 
         let method = match components.next() {
-            Some(value) => Method::from_str(value),
+            Some(value) => match Method::from_str(value) {
+                Some(method) => method,
+                None => return Err(format!("Invalid method: {}", value)),
+            },
             None => return Err("Request line invalid, method missing".to_string())
         };
 

@@ -3,7 +3,10 @@ use std::net::TcpStream;
 
 pub fn request(url: &str, method: &str, protocol: &str, headers: Vec<String>, body: &str) -> u16 {
 
-    let mut stream = TcpStream::connect("127.0.0.1:80").unwrap();
+    let mut stream = match TcpStream::connect("127.0.0.1:80") {
+        Ok(s) => s,
+        Err(_) => return 0
+    };
 
     stream.write_all(format!("{} {} {}\r\n{}\r\n\r\n{}", method, url, protocol, headers.join("\r\n"), body).as_bytes()).unwrap();
 
