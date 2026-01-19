@@ -16,33 +16,36 @@ fn main() {
 }
 
 fn handle_connection(stream: &mut TcpStream) {
-    let response = handle_request(&stream);
+    let response = handle_request(stream);
 
     stream.write_all(response.to_http().as_bytes()).unwrap();
 }
 
-fn handle_request(stream: &TcpStream) -> Response {
-    let head = read_head(stream).unwrap();
+fn handle_request(stream: &mut TcpStream) -> Response {
 
-    let request_line = match RequestLine::new_from_http(head.0) {
+    let mut reader = BufReader::new(stream);
+
+    let (raw_request_line, raw_headers, body_already_read) = read_head(&mut reader).unwrap();
+
+    let request_line = match RequestLine::new_from_http(raw_request_line) {
         Ok(request_line) => request_line,
         Err(error) => return Response::error(StatusCode::BadRequest, error)
     };
 
-    let headers = match Headers::new_from_http(head.1) {
+    let headers = match Headers::new_from_http(raw_headers) {
         Ok(headers) => headers,
         Err(error) => return Response::error(StatusCode::BadRequest, error)
     };
 
     // todo handle body
-    let body = match read_body(stream, head.2) {
+    let body = match read_body(&mut reader, body_already_read, &headers) {
         Ok(body) => body,
         Err(error) => return Response::error(StatusCode::BadRequest, error)
     };
 
     println!("{:?}", request_line);
     println!("{:?}", headers);
-    println!("{:?}", body);
+    println!("{:?}", str::from_utf8(body.as_slice()).unwrap());
 
     let body = "Hello World";
 
@@ -54,8 +57,7 @@ fn handle_request(stream: &TcpStream) -> Response {
 }
 
 // todo rework bufreader to continue reading body
-fn read_head(stream: &TcpStream) -> Result<(String, String, usize), String> {
-    let mut reader = BufReader::new(stream);
+fn read_head(reader: &mut BufReader<&mut TcpStream>) -> Result<(String, String, Vec<u8>), String> {
 
     let mut head_buffer = Vec::with_capacity(1024);
     let mut scanned = 0;
@@ -89,12 +91,12 @@ fn read_head(stream: &TcpStream) -> Result<(String, String, usize), String> {
         .position(|w| w == b"\r\n\r\n")
         .unwrap();
 
-    let (head_buffer, _) = head_buffer.split_at(head_end);
+    let (head_buffer, body_buffer) = head_buffer.split_at(head_end);
 
     match str::from_utf8(head_buffer) {
         Ok(head) => {
             match head.split_once("\r\n") {
-                Some(components) => Ok((components.0.to_string(), components.1.to_string(), head_end + 4)),
+                Some(components) => Ok((components.0.to_string(), components.1.to_string(), body_buffer.to_vec())),
                 None => Err("Invalid head structure".to_string())
             }
         },
@@ -102,8 +104,23 @@ fn read_head(stream: &TcpStream) -> Result<(String, String, usize), String> {
     }
 }
 
-fn read_body(stream: &TcpStream, start: usize, length: u8) -> Result<Vec<u8>, String> {
-    let mut reader = BufReader::new(stream);
+fn read_body(reader: &mut BufReader<&mut TcpStream>, mut already_read: Vec<u8>, headers: &Headers) -> Result<Vec<u8>, String> {
+    // todo no body? maybe default to 0
+    let content_length = headers.content_length().unwrap_or(0);
 
+    if already_read.len() > content_length {
+        already_read.truncate(content_length);
+        return Ok(already_read);
+    }
 
+    let missing = content_length - already_read.len();
+    let mut rest = vec![0u8; missing];
+
+    match reader.read_exact(&mut rest) {
+        Ok(_) => {
+            already_read.extend(rest);
+            Ok(already_read)
+        }
+        Err(_) => Err("Failed to read body".to_string())
+    }
 }

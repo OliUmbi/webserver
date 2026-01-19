@@ -28,7 +28,7 @@ impl Headers {
     }
     
     pub fn add(&mut self, name: &str, value: &str) {
-        self.values.insert(name.to_string(), value.to_string());
+        self.values.insert(name.to_lowercase().to_string(), value.to_string());
     }
 
     pub fn add_from_str(&mut self, s: &str) -> Result<(), String> {
@@ -38,7 +38,7 @@ impl Headers {
             return Err(format!("invalid header: {}", s));
         }
 
-        let name = header.unwrap().0.trim().to_string();
+        let name = header.unwrap().0.trim().to_lowercase().to_string();
         let value = header.unwrap().1.trim().to_string();
 
         if self.values.contains_key(&name) {
@@ -52,5 +52,17 @@ impl Headers {
 
     pub fn to_http(&self) -> String {
         self.values.iter().map(|header| format!("{}: {}", header.0, header.1)).collect::<Vec<String>>().join("\r\n")
+    }
+
+    pub fn content_length(&self) -> Option<usize> {
+        match self.values.get("content-length") {
+            Some(length) => {
+                match length.parse::<usize>() {
+                    Ok(length) => Some(length),
+                    Err(_) => None
+                }
+            }
+            None => None
+        }
     }
 }
