@@ -16,3 +16,5 @@
 -[ ] plan broad architecture designs
 -[ ] review https://github.com/uNetworking/h1spec
 -[ ] review coverage check https://pypi.org/project/httplint/
+-[ ] make shared actually a shared crate without implementation details
+-[ ] multithreading

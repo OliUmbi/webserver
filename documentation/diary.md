@@ -27,7 +27,12 @@
 
 ## 16.01. Friday
 
+- moved code responsibility to structs
+- implemented body parsing (chunked missing)
+
 ## 19.01. Monday
+
+- feedback market
 
 ## 20.01. Tuesday
 

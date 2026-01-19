@@ -1,13 +1,44 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>IPRO</title>
+    <meta charset="UTF-8" />
+    <title>Request Successful</title>
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        }
+
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(
+                    135deg,
+                    #ff0000,
+                    #ff7f00,
+                    #ffff00,
+                    #00ff00,
+                    #0000ff,
+                    #4b0082,
+                    #8f00ff
+            );
+        }
+
+        .message {
+            color: white;
+            font-size: 2.5rem;
+            font-weight: 600;
+            padding: 2rem 3rem;
+            border-radius: 12px;
+            backdrop-filter: blur(6px);
+            background: rgba(0, 0, 0, 0.25);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+        }
+    </style>
 </head>
 <body>
-<h1>IPRO prototype</h1>
+<div class="message">Request successful</div>
 </body>
 </html>

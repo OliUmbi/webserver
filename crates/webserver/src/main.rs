@@ -1,5 +1,6 @@
 use shared::{Headers, RequestLine, Response, StatusCode};
 use std::cmp::max;
+use std::fs;
 use std::io::{BufReader, Read, Write};
 use std::net::{TcpListener, TcpStream};
 
@@ -47,10 +48,10 @@ fn handle_request(stream: &mut TcpStream) -> Response {
     println!("{:?}", headers);
     println!("{:?}", str::from_utf8(body.as_slice()).unwrap());
 
-    let body = "Hello World";
+    let body = fs::read_to_string("C:/Users/olive/IdeaProjects/webserver/examples/simple/index.html").unwrap();
 
     let mut response_headers = Headers::new();
-    response_headers.add_from_str("Content-Type: text/plain").unwrap();
+    response_headers.add_from_str("Content-Type: text/html").unwrap();
     response_headers.add_from_str(format!("Content-Length: {}", body.len()).as_str()).unwrap();
 
     Response::new(StatusCode::Ok, response_headers, body.to_string())
