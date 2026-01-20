@@ -25,6 +25,7 @@ Application should run as Linux service serving HTML files from filesystem using
 - deployment setups (Linux service, Docker)
 - file based configuration
 - file based routing
+- ssl
 - (reverse proxy)
 - (caching)
 - (load balancing)

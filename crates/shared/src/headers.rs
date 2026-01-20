@@ -2,6 +2,7 @@ use std::collections::HashMap;
 
 // todo maybe add a HeaderName enum for known types
 // todo multiple headers with same name? combine idk spec: https://www.w3.org/Protocols/rfc2616/rfc2616-sec4.html#sec4.2
+// todo review current lowercase headers saving
 #[derive(Debug)]
 pub struct Headers {
     values: HashMap<String, String>,
@@ -64,5 +65,9 @@ impl Headers {
             }
             None => None
         }
+    }
+
+    pub fn transfer_encoding(&self) -> Option<String> {
+        self.values.get("transfer-encoding").cloned()
     }
 }

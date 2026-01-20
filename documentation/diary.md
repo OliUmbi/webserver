@@ -33,8 +33,13 @@
 ## 19.01. Monday
 
 - feedback market
+- added a few tests
 
 ## 20.01. Tuesday
+
+- meeting preparation
+- knowledge http 1.1 specification documentation
+- implemented chunked body
 
 ## 21.01. Wednesday
 

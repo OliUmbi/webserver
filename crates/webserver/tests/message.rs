@@ -65,3 +65,8 @@ fn content_length_non_numeric() {
 fn content_length_conflict() {
     assert_eq!(400, util::request("/", "GET", "HTTP/1.1", vec!["Content-Length: 19".to_string()], "Hello"));
 }
+
+#[test]
+fn chunked() {
+    assert_eq!(200, util::request("/", "GET", "HTTP/1.1", vec!["Transfer-encoding: chunked".to_string()], "4\r\nWiki\r\n7\r\npedia i\r\nB\r\nn \r\nchunks.\r\n0\r\n\r\n"));
+}
