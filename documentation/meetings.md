@@ -27,6 +27,7 @@
 
 ### Topics
 - status
+  - running webserver for presentation
   - implemented solid message parsing 
   - webserver implementation slightly behind planned schedule
 - goals
@@ -39,4 +40,5 @@
 - deadlines
   - Monday feedback round 
 - feedback
-
+  - stream based parsing
+  - json config

@@ -1,5 +1,7 @@
-use std::fmt::format;
-use crate::{Headers, Protocol, ResponseLine, StatusCode};
+use crate::http::headers::Headers;
+use crate::http::protocol::Protocol;
+use crate::http::response_line::ResponseLine;
+use crate::http::status_code::StatusCode;
 
 // todo metadata (ip, time)
 pub struct Response {

@@ -1,4 +1,5 @@
-use crate::{Protocol, StatusCode};
+use crate::http::protocol::Protocol;
+use crate::http::status_code::StatusCode;
 
 #[derive(Debug)]
 pub struct ResponseLine {

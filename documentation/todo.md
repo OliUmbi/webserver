@@ -18,3 +18,4 @@
 -[ ] review coverage check https://pypi.org/project/httplint/
 -[ ] make shared actually a shared crate without implementation details
 -[ ] multithreading
+-[ ] detailed sprint docs with goals and achieved

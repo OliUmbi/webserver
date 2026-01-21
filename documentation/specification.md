@@ -26,6 +26,7 @@ Application should run as Linux service serving HTML files from filesystem using
 - file based configuration
 - file based routing
 - ssl
+- terminal dashboard view of load, requests, open connections, etc.
 - (reverse proxy)
 - (caching)
 - (load balancing)

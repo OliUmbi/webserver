@@ -1,4 +1,6 @@
-use crate::{Method, Protocol, Url};
+use crate::http::method::Method;
+use crate::http::protocol::Protocol;
+use crate::http::url::Url;
 
 #[derive(Debug)]
 pub struct RequestLine {
