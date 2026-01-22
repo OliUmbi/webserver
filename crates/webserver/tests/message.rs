@@ -1,3 +1,6 @@
+use std::thread::sleep;
+use std::time::Duration;
+
 mod setup;
 mod util;
 
@@ -68,5 +71,15 @@ fn content_length_conflict() {
 
 #[test]
 fn chunked() {
+    assert_eq!(200, util::request("/", "GET", "HTTP/1.1", vec!["Transfer-encoding: chunked".to_string()], "4\r\nWiki\r\n7\r\npedia i\r\nB\r\nn \r\nchunks.\r\n0\r\n\r\n"));
+}
+
+#[test]
+fn volume() {
+    for _ in 0..1000 {
+        util::request("/", "GET", "HTTP/1.1", vec!["Transfer-encoding: chunked".to_string()], "4\r\nWiki\r\n7\r\npedia i\r\nB\r\nn \r\nchunks.\r\n0\r\n\r\n");
+        sleep(Duration::from_millis(5))
+    }
+
     assert_eq!(200, util::request("/", "GET", "HTTP/1.1", vec!["Transfer-encoding: chunked".to_string()], "4\r\nWiki\r\n7\r\npedia i\r\nB\r\nn \r\nchunks.\r\n0\r\n\r\n"));
 }

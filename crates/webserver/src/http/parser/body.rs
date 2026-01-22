@@ -2,7 +2,7 @@ use std::io::{BufReader, Read};
 use std::net::TcpStream;
 use crate::http::headers::Headers;
 
-pub fn parse_body(reader: &mut BufReader<&mut TcpStream>, mut already_read: Vec<u8>, headers: &Headers) -> Result<Vec<u8>, String> {
+pub fn parse_body(reader: &mut BufReader<&TcpStream>, mut already_read: Vec<u8>, headers: &Headers) -> Result<Vec<u8>, String> {
 
     already_read.drain(0..4);
 
@@ -34,7 +34,7 @@ pub fn parse_body(reader: &mut BufReader<&mut TcpStream>, mut already_read: Vec<
 }
 
 // todo rework (partly AI generated needs cleanup and restructuring)
-fn read_chunked_body(reader: &mut BufReader<&mut TcpStream>, mut body: Vec<u8>) -> Result<Vec<u8>, String> {
+fn read_chunked_body(reader: &mut BufReader<&TcpStream>, mut body: Vec<u8>) -> Result<Vec<u8>, String> {
     let mut result = Vec::new();
 
     loop {
