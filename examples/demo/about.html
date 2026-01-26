@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>How Webservers Work</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="site-header">
+    <div class="container">
+        <h1 class="logo"><a href="index.html">Webserver & HTTP/1.1</a></h1>
+        <nav class="nav">
+            <a href="index.html">Home</a>
+            <a href="http11.html">HTTP/1.1 Spec</a>
+            <a href="about.html" class="active">How Webservers Work</a>
+        </nav>
+    </div>
+</header>
+
+<main class="container">
+    <article class="content">
+        <h2>Core components of a webserver</h2>
+        <ol>
+            <li><strong>Socket and accept loop</strong> — listen on a port, accept TCP connections</li>
+            <li><strong>Request parser</strong> — read request line, parse headers, determine body length</li>
+            <li><strong>Router/handler</strong> — map path and method to static file or application handler</li>
+            <li><strong>Response generator</strong> — set status, headers, and body; handle caching headers</li>
+            <li><strong>Connection management</strong> — keep-alive, timeouts, graceful close</li>
+        </ol>
+
+        <h3>Static files vs dynamic apps</h3>
+        <p>Static server: resolves path to file and streams it. Dynamic: forwards request to an application (CGI, FastCGI, reverse-proxy to upstream process)</p>
+
+        <h3>Reverse proxies and load balancers</h3>
+        <p>Reverse proxy sits in front of app servers, terminates connections, applies TLS, caching, rate-limiting, and forwards requests to backend pool.</p>
+
+        <h3>Performance considerations</h3>
+        <ul>
+            <li>Use persistent connections to reduce TCP/TLS overhead</li>
+            <li>Serve static assets from cache-friendly paths with long cache-control</li>
+            <li>Prefer streaming and chunked transfer for large/dynamic responses</li>
+        </ul>
+
+        <h3>Small diagram</h3>
+        <pre class="diagram">Client → TCP → Webserver → (static file) or → Upstream app
+                                           ↑                          |
+                                       Reverse proxy                DB/other services</pre>
+
+        <p class="muted">This is a compact primer to help you understand how a server handles HTTP/1.1 traffic.</p>
+    </article>
+</main>
+</body>
+</html>

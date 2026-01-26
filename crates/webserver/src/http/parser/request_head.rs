@@ -7,7 +7,7 @@ const MAX_HEADER_LENGTH: usize = 8 * 1024; // todo move
 
 // todo delete this file
 
-pub fn parse_head(reader: &mut BufReader<&mut TcpStream>) -> Result<(String, String, Vec<u8>), String> {
+pub fn parse_head(reader: &mut BufReader<&TcpStream>) -> Result<(String, String, Vec<u8>), String> {
 
     let mut head_buffer = Vec::with_capacity(1024);
     let mut scanned = 0;

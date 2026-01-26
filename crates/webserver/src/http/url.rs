@@ -1,6 +1,6 @@
 #[derive(Debug)]
 pub struct Url {
-    raw: String,
+    pub raw: String,
 }
 
 impl Url {

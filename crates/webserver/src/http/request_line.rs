@@ -4,9 +4,9 @@ use crate::http::url::Url;
 
 #[derive(Debug)]
 pub struct RequestLine {
-    method: Method,
-    url: Url,
-    protocol: Protocol
+    pub method: Method,
+    pub url: Url,
+    pub protocol: Protocol
 }
 
 impl RequestLine {

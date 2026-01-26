@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>How Webservers & HTTP/1.1 Work — Dark</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="site-header">
+    <div class="container">
+        <h1 class="logo">Webserver & HTTP/1.1</h1>
+        <nav class="nav">
+            <a href="index.html" class="active">Home</a>
+            <a href="http11.html">HTTP/1.1 Spec</a>
+            <a href="about.html">How Webservers Work</a>
+        </nav>
+    </div>
+</header>
+
+<main class="container">
+    <section class="hero">
+        <h2>Quick guide to static webservers and the HTTP/1.1 protocol</h2>
+        <p>Small multipage, dark-only site. Static — serve by pointing any webserver to this directory.</p>
+        <p class="meta">Files: <code>index.html</code>, <code>http11.html</code>, <code>about.html</code>, <code>styles.css</code></p>
+    </section>
+
+    <section class="cards">
+        <article class="card">
+            <h3>HTTP/1.1 Overview</h3>
+            <p>Request/response protocol used for client-server communication on the web. See details on the HTTP/1.1 page.</p>
+            <p class="link"><a href="http11.html">Read HTTP/1.1 spec notes →</a></p>
+        </article>
+
+        <article class="card">
+            <h3>Webserver Basics</h3>
+            <p>How servers accept connections, parse requests, and serve files or pass requests to apps.</p>
+            <p class="link"><a href="about.html">How webservers work →</a></p>
+        </article>
+
+        <article class="card">
+            <h3>Serve this site</h3>
+            <pre class="cmd">rustc main.rs</pre>
+            <p class="muted">Or use any static server or point nginx/Apache to this folder.</p>
+        </article>
+    </section>
+
+    <footer class="footer">
+        <p>Designed to be served statically — no build step required.</p>
+    </footer>
+</main>
+
+</body>
+</html>

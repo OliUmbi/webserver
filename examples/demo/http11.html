@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>HTTP/1.1 — Key Concepts</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="site-header">
+    <div class="container">
+        <h1 class="logo"><a href="index.html">Webserver & HTTP/1.1</a></h1>
+        <nav class="nav">
+            <a href="index.html">Home</a>
+            <a href="http11.html" class="active">HTTP/1.1 Spec</a>
+            <a href="about.html">How Webservers Work</a>
+        </nav>
+    </div>
+</header>
+
+<main class="container">
+    <article class="content">
+        <h2>HTTP/1.1 — the essentials</h2>
+        <p>This page summarises the most important parts of the HTTP/1.1 request/response model.</p>
+
+        <h3>Request format</h3>
+        <pre><code>Method SP Request-URI SP HTTP-Version CRLF
+headers CRLF
+[message-body]</code></pre>
+
+        <table class="spec">
+            <tr><th>Common methods</th><th>Meaning</th></tr>
+            <tr><td>GET</td><td>Retrieve resource; no body expected</td></tr>
+            <tr><td>HEAD</td><td>Same as GET but only headers</td></tr>
+            <tr><td>POST</td><td>Send data to server (form, API calls)</td></tr>
+            <tr><td>PUT, DELETE</td><td>Modify or remove resource</td></tr>
+        </table>
+
+        <h3>Response format</h3>
+        <pre><code>HTTP-Version SP Status-Code SP Reason-Phrase CRLF
+headers CRLF
+[message-body]</code></pre>
+
+        <h3>Important headers</h3>
+        <ul>
+            <li><strong>Host</strong> — required in HTTP/1.1 (virtual hosts)</li>
+            <li><strong>Connection</strong> — keep-alive or close; controls persistence</li>
+            <li><strong>Transfer-Encoding</strong> — e.g. chunked transfer</li>
+            <li><strong>Content-Length</strong> — body length in bytes</li>
+            <li><strong>Cache-Control</strong>, <strong>ETag</strong>, <strong>Last-Modified</strong> — caching</li>
+        </ul>
+
+        <h3>Persistent connections</h3>
+        <p>HTTP/1.1 defaults to persistent connections; multiple requests may reuse the same TCP connection. Use <code>Connection: close</code> to end.</p>
+
+        <h3>Chunked transfer</h3>
+        <p>Servers can send dynamic-length bodies using chunked encoding: each chunk prefixed with length in hex, terminated by a zero-length chunk.</p>
+
+        <h3>Pipelining and limitations</h3>
+        <p>Pipelining allows sending multiple requests without waiting for responses but had limited adoption and head-of-line blocking issues. Modern clients prefer multiple connections or HTTP/2 multiplexing.</p>
+
+        <h3>Status codes (examples)</h3>
+        <table class="spec">
+            <tr><th>Code</th><th>Meaning</th></tr>
+            <tr><td>200</td><td>OK</td></tr>
+            <tr><td>301</td><td>Moved Permanently</td></tr>
+            <tr><td>302</td><td>Found / Temporary redirect</td></tr>
+            <tr><td>404</td><td>Not Found</td></tr>
+            <tr><td>500</td><td>Internal Server Error</td></tr>
+        </table>
+
+        <h3>Security notes</h3>
+        <ul>
+            <li>HTTP/1.1 is plain-text; use TLS (HTTPS) for confidentiality and integrity</li>
+            <li>Be careful with header injection and request validation</li>
+        </ul>
+
+        <p class="muted">Source: condensed from RFC 2616 and subsequent updates — this page is a practical summary, not a normative reference.</p>
+    </article>
+</main>
+</body>
+</html>
