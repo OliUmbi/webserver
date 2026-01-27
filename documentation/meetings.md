@@ -42,3 +42,22 @@
 - feedback
   - stream based parsing
   - json config
+
+## 28.01. Wednesday
+09:30 - 10:00, 5.2B34
+
+### Topics
+- status
+  - robust multithreading implementation
+  - configuration setup and basics implemented
+  - simple directory serving
+  - behind schedule on testing
+  - error handling and logging needs to be reworked
+- goals
+  - error handling and logging
+  - deployment on switch engines
+  - test setup
+  - service interaction and better observability
+- deadlines
+  - Monday feedback round 
+- feedback

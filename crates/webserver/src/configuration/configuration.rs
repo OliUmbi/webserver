@@ -1,13 +1,21 @@
+use crate::configuration::validate::Validate;
+use crate::configuration::configuration_error::ConfigurationError;
+use crate::configuration::route::Route;
+use crate::configuration::server::Server;
+use serde::{Deserialize, Serialize};
+
+#[derive(Debug, Deserialize, Serialize)]
 pub struct Configuration {
-    threads: usize,
-    port: usize,
-    timeout: usize,
-    max_header_length: usize,
-    max_body_length: usize,
-    routes: Vec<Route>,
+    #[serde(default)]
+    pub server: Server,
+
+    #[serde(default)]
+    pub routes: Vec<Route>,
 }
 
-pub struct Route {
-    path: String,
-    target: String,
+impl Validate for Configuration {
+    fn valid(&self) -> Result<(), ConfigurationError> {
+        self.server.valid()?;
+        self.routes.iter().try_for_each(Validate::valid)
+    }
 }

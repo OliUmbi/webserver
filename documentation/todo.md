@@ -5,12 +5,17 @@
 -[x] cargo workspace setup
 -[x] plan broad architecture designs
 -[x] multithreading
--[ ] rework body and header parsing in new structure
+-[ ] rework body and header parsing in new structure (multiline header)
 -[ ] configuration
+-[ ] timeout
+-[ ] error handling 
 -[ ] logging
 -[ ] hardware / deployment
 -[ ] improve testing and benching framework
 -[ ] console view of current stats (num requests, top urls, metadata, threads, pressure, etc)
+-[ ] reverse proxy
+-[ ] ssl
+-[ ] testing setup 
 
 ## Documentation
 -[x] setup repository

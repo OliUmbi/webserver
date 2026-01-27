@@ -1,13 +1,14 @@
 use std::cmp::max;
 use std::io::{BufReader, Read};
 use std::net::TcpStream;
+use crate::configuration::configuration::Configuration;
 
 const MAX_HEADER_LENGTH: usize = 8 * 1024; // todo move
 
 
 // todo delete this file
 
-pub fn parse_head(reader: &mut BufReader<&TcpStream>) -> Result<(String, String, Vec<u8>), String> {
+pub fn parse_head(reader: &mut BufReader<&TcpStream>, configuration: &Configuration) -> Result<(String, String, Vec<u8>), String> {
 
     let mut head_buffer = Vec::with_capacity(1024);
     let mut scanned = 0;
@@ -39,7 +40,7 @@ pub fn parse_head(reader: &mut BufReader<&TcpStream>) -> Result<(String, String,
     let head_end = head_buffer
         .windows(4)
         .position(|w| w == b"\r\n\r\n")
-        .unwrap();
+         .unwrap();
 
     let (head_buffer, body_buffer) = head_buffer.split_at(head_end);
 

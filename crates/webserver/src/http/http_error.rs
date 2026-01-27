@@ -19,10 +19,10 @@ impl Display for HttpError {
 impl Error for HttpError {}
 
 impl HttpError {
-    pub fn new(status: StatusCode, message: String) -> Self {
+    pub fn new<S: Into<String>>(status: StatusCode, message: S) -> Self {
         Self {
             status,
-            message
+            message: message.into()
         }
     }
 

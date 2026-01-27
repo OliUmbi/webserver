@@ -14,7 +14,7 @@
 | 22.01. | Th  |                         |                                        |
 | 23.01. | Fr  |                         |                                        |
 |        |     |                         |                                        |
-| 26.01. | Mo  | feedback market (11:00) |                                        |
+| 26.01. | Mo  | feedback market (10:45) |                                        |
 | 27.01. | Tu  |                         |                                        |
 | 28.01. | We  | coach meeting (09:30)   |                                        |
 | 29.01. | Th  |                         |                                        |

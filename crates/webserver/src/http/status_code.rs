@@ -1,4 +1,6 @@
-#[derive(Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd)]
+use serde::{Deserialize, Serialize};
+
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Deserialize, Serialize)]
 #[repr(u16)]
 pub enum StatusCode {
     Continue = 100,

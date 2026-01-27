@@ -1,0 +1,11 @@
+[server]
+threads = 8
+
+[[routes]]
+
+[routes.path]
+Prefix = "/"
+
+[routes.action.Static]
+root = "./examples/demo/"
+fallback = "./notfound.html"

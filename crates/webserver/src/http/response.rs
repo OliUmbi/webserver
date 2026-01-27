@@ -19,13 +19,16 @@ impl Response {
         }
     }
     
+    // todo implement a content-length system that works for multiple use cases
+    
+    // todo rework
     pub fn error(status: StatusCode, message: String) -> Self {
 
         let body = format!("Error: {}", message);
         
         let mut headers = Headers::new();
-        headers.add("Content-Type", "text/plain");
-        headers.add("Content-Length", format!("{}", body.len()).as_str());
+        headers.add("Content-Type".to_string(), "text/plain".to_string());
+        headers.add("Content-Length".to_string(), format!("{}", body.len()));
         
         Response {
             response_line: ResponseLine::new(Protocol::Http1_1, status),

@@ -43,13 +43,26 @@
 
 ## 21.01. Wednesday
 
+- reworked whole project structure
+
 ## 22.01. Thursday
+
+- implemented for multithreading implementation
 
 ## 23.01. Friday
 
+- setup configuration
+
 ## 26.01. Monday
 
+- feedback round
+- polished configuration setup / defaults
+
 ## 27.01. Tuesday
+
+- config implemented
+- multithreading reworked into struct with shutdown
+- restructured parsing
 
 ## 28.01. Wednesday
 

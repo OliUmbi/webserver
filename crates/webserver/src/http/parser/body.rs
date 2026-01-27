@@ -1,8 +1,10 @@
 use std::io::{BufReader, Read};
 use std::net::TcpStream;
 use crate::http::headers::Headers;
+use crate::http::http_error::HttpError;
+use crate::http::status_code::StatusCode;
 
-pub fn parse_body(reader: &mut BufReader<&TcpStream>, mut already_read: Vec<u8>, headers: &Headers) -> Result<Vec<u8>, String> {
+pub fn parse_body(reader: &mut BufReader<&TcpStream>, mut already_read: Vec<u8>, headers: &Headers) -> Result<Vec<u8>, HttpError> {
 
     already_read.drain(0..4);
 
@@ -10,7 +12,7 @@ pub fn parse_body(reader: &mut BufReader<&TcpStream>, mut already_read: Vec<u8>,
         return if te.eq_ignore_ascii_case("chunked") {
             read_chunked_body(reader, already_read)
         } else {
-            Err("Unsupported transfer-encoding".to_string())
+            Err(HttpError::new(StatusCode::BadRequest, "Unsupported transfer-encoding"))
         }
     }
 
@@ -29,12 +31,12 @@ pub fn parse_body(reader: &mut BufReader<&TcpStream>, mut already_read: Vec<u8>,
             already_read.extend(rest);
             Ok(already_read)
         }
-        Err(_) => Err("Failed to read body".to_string())
+        Err(_) => Err(HttpError::new(StatusCode::BadRequest, "Failed to read body"))
     }
 }
 
 // todo rework (partly AI generated needs cleanup and restructuring)
-fn read_chunked_body(reader: &mut BufReader<&TcpStream>, mut body: Vec<u8>) -> Result<Vec<u8>, String> {
+fn read_chunked_body(reader: &mut BufReader<&TcpStream>, mut body: Vec<u8>) -> Result<Vec<u8>, HttpError> {
     let mut result = Vec::new();
 
     loop {
@@ -43,27 +45,27 @@ fn read_chunked_body(reader: &mut BufReader<&TcpStream>, mut body: Vec<u8>) -> R
             if let Some(pos) = body.windows(2).position(|w| w == b"\r\n") {
                 let line = body.drain(..pos + 2).collect::<Vec<u8>>();
                 break String::from_utf8(line[..line.len() - 2].to_vec())
-                    .map_err(|_| "invalid chunk size utf8")?;
+                    .map_err(|_| HttpError::new(StatusCode::BadRequest, "invalid chunk size utf8"))?;
             }
 
             let mut tmp = [0u8; 512];
-            let n = reader.read(&mut tmp).map_err(|_| "read failed")?;
+            let n = reader.read(&mut tmp).map_err(|_| HttpError::new(StatusCode::BadRequest, "read failed"))?;
             if n == 0 {
-                return Err("unexpected eof while reading chunk size".into());
+                return Err(HttpError::new(StatusCode::BadRequest, "unexpected eof while reading chunk size"));
             }
             body.extend_from_slice(&tmp[..n]);
         };
 
         let size = usize::from_str_radix(size_line.trim(), 16)
-            .map_err(|_| "invalid chunk size")?;
+            .map_err(|_| HttpError::new(StatusCode::BadRequest, "invalid chunk size"))?;
 
         if size == 0 {
             // consume final CRLF
             while body.len() < 2 {
                 let mut tmp = [0u8; 512];
-                let n = reader.read(&mut tmp).map_err(|_| "read failed")?;
+                let n = reader.read(&mut tmp).map_err(|_| HttpError::new(StatusCode::BadRequest, "read failed"))?;
                 if n == 0 {
-                    return Err("unexpected eof after final chunk".into());
+                    return Err(HttpError::new(StatusCode::BadRequest, "unexpected eof after final chunk"));
                 }
                 body.extend_from_slice(&tmp[..n]);
             }
@@ -74,9 +76,9 @@ fn read_chunked_body(reader: &mut BufReader<&TcpStream>, mut body: Vec<u8>) -> R
         // --- read chunk data ---
         while body.len() < size + 2 {
             let mut tmp = [0u8; 512];
-            let n = reader.read(&mut tmp).map_err(|_| "read failed")?;
+            let n = reader.read(&mut tmp).map_err(|_| HttpError::new(StatusCode::BadRequest, "read failed"))?;
             if n == 0 {
-                return Err("unexpected eof while reading chunk".into());
+                return Err(HttpError::new(StatusCode::BadRequest, "unexpected eof while reading chunk"));
             }
             body.extend_from_slice(&tmp[..n]);
         }
