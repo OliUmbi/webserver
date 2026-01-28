@@ -6,7 +6,7 @@ use crate::http::status_code::StatusCode;
 
 #[derive(Debug, Deserialize, Serialize)]
 pub enum Action {
-    Static { root: PathBuf, fallback: Option<PathBuf> },
+    Fixed { root: PathBuf, fallback: Option<PathBuf> },
     Proxy { upstream: String },
     Redirect { to: String, code: StatusCode },
 }

@@ -1,9 +1,9 @@
 use crate::configuration::configuration::Configuration;
 use crate::http::headers::Headers;
-use crate::http::parser::body::parse_body;
-use crate::http::parser::headers::parse_headers;
-use crate::http::parser::request_head::parse_head;
-use crate::http::parser::request_line::parse_request_line;
+use crate::parser::body::parse_body;
+use crate::parser::headers::parse;
+use crate::parser::head::parse_head;
+use crate::parser::request_line::parse;
 use crate::http::response::Response;
 use crate::http::status_code::StatusCode;
 use crate::server::server_error::ServerError;
@@ -12,7 +12,12 @@ use std::net::{SocketAddr, TcpListener, TcpStream};
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, Mutex, mpsc};
 use std::{fs, thread};
-use crate::http::http_error::HttpError;
+use std::string::ParseError;
+use log::error;
+use crate::http::request::Request;
+use crate::{handler, parser, routing};
+use crate::handler::handler_error::HandlerError;
+use crate::parser::parser_error::ParserError;
 
 pub struct Server {
     running: Arc<AtomicBool>,
@@ -121,69 +126,20 @@ fn handle_connection(mut stream: TcpStream, configuration: &Configuration) {
 }
 
 fn handle_request(stream: &TcpStream, configuration: &Configuration) -> Response {
-    let mut reader = BufReader::new(stream);
-
-    let (raw_request_line, raw_headers, body_already_read) =
-        match parse_head(&mut reader, configuration) {
-            Ok(head) => head,
-            Err(error) => return Response::from(HttpError::new(StatusCode::BadRequest, error)),
-        };
-
-    let request_line = match parse_request_line(raw_request_line) {
-        Ok(request_line) => request_line,
-        Err(error) => return Response::from(error),
+    let request = match parser::request::parse(stream, &configuration) {
+        Ok(request) => request,
+        Err(error) => return Response::from(error) // todo impl
     };
 
-    let headers = match parse_headers(raw_headers) {
-        Ok(headers) => headers,
-        Err(error) => return Response::from(error),
+    let route = match routing::router::resolve(&request, &configuration) {
+        Ok(route) => route,
+        Err(error) => return Response::from(error) // todo impl
     };
 
-    // todo handle body
-    let body = match parse_body(&mut reader, body_already_read, &headers) {
-        Ok(body) => body,
-        Err(error) => return Response::from(error),
+    let response = match handler::route::handle(&request, route, &configuration) {
+        Ok(response) => response,
+        Err(error) => return Response::from(error) // todo impl
     };
 
-    println!("{:?}", request_line);
-    println!("{:?}", headers);
-    println!("{:?}", str::from_utf8(body.as_slice()).unwrap());
-
-    let mut path = match request_line.url.raw.as_str() {
-        "/" => "/index.html",
-        value => value,
-    };
-
-    path = match fs::exists(format!(
-        "C:/Users/olive/IdeaProjects/webserver/examples/demo/{}",
-        path
-    )) {
-        Ok(exists) => {
-            if exists {
-                path
-            } else {
-                "/notfound.html"
-            }
-        }
-        Err(_) => "/notfound.html",
-    };
-
-    let body = fs::read_to_string(format!(
-        "C:/Users/olive/IdeaProjects/webserver/examples/demo/{}",
-        path
-    ))
-    .unwrap();
-
-    let mut response_headers = Headers::new();
-    response_headers.add(
-        "Content-Type".to_string(),
-        if path.contains("html") {
-            "text/html".to_string()
-        } else {
-            "text/css".to_string()
-        },
-    );
-    response_headers.add("Content-Length".to_string(), body.len().to_string());
-
-    Response::new(StatusCode::Ok, response_headers, body.to_string())
+    response
 }

@@ -6,7 +6,7 @@
 -[x] plan broad architecture designs
 -[x] multithreading
 -[ ] rework body and header parsing in new structure (multiline header)
--[ ] configuration
+-[ ] configuration + regex
 -[ ] timeout
 -[ ] error handling 
 -[ ] logging
@@ -24,6 +24,7 @@
 -[x] prepare coach meeting
 -[x] complete diary for 12.01.
 -[x] complete diary for 13.01.
+-[ ] kompetenzen wählen und abdecken
 -[ ] rework specification goal
 -[ ] define knowledge goals
 -[ ] define roadmap

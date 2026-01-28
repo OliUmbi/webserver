@@ -28,6 +28,13 @@ impl Headers {
             .join("\r\n")
     }
 
+    pub fn is_chunked(&self) -> bool {
+        match self.values.get("Transfer-Encoding") {
+            Some(transfer_encoding) => transfer_encoding.eq_ignore_ascii_case("chunked"),
+            None => false,
+        }
+    }
+
     pub fn content_length(&self) -> Option<usize> {
         match self.values.get("content-length") {
             Some(length) => match length.parse::<usize>() {

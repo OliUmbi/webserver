@@ -1,24 +1,25 @@
 use std::error::Error;
 use std::fmt;
 use std::fmt::{Display, Formatter};
+use crate::handler::handler_error::HandlerError;
 use crate::http::response::Response;
 use crate::http::status_code::StatusCode;
 
 #[derive(Debug)]
-pub struct HttpError {
+pub struct RoutingError {
     pub status: StatusCode,
     pub message: String,
 }
 
-impl Display for HttpError {
+impl Display for RoutingError {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         write!(f, "{}: {}", self.status.as_str(), self.message)
     }
 }
 
-impl Error for HttpError {}
+impl Error for RoutingError {}
 
-impl HttpError {
+impl RoutingError {
     pub fn new<S: Into<String>>(status: StatusCode, message: S) -> Self {
         Self {
             status,
@@ -31,10 +32,8 @@ impl HttpError {
     }
 }
 
-impl From<HttpError> for Response {
-    fn from(err: HttpError) -> Self {
-        Response::error(err.status, err.message)
+impl From<RoutingError> for Response {
+    fn from(error: RoutingError) -> Self {
+        Response::error(error.status, error.message)
     }
 }
-
-
