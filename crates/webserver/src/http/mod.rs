@@ -1,4 +1,3 @@
-pub mod model;
 pub mod headers;
 pub mod body;
 pub mod status_code;

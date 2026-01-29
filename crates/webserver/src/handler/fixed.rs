@@ -7,9 +7,8 @@ use crate::http::request::Request;
 use crate::http::response::Response;
 use crate::http::status_code::StatusCode;
 
-pub fn handle(request: Request, route: Route, configuration: Configuration) -> Result<Response, HandlerError> {
-
-
+pub fn handle(request: &Request, route: &Route, configuration: &Configuration) -> Result<Response, HandlerError> {
+    
     let mut path = match request_line.url.raw.as_str() {
         "/" => "/index.html",
         value => value,

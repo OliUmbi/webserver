@@ -3,28 +3,27 @@ use crate::http::request::Request;
 use crate::http::status_code::StatusCode;
 use crate::parser::parser_error::ParserError;
 use crate::parser::{body, head};
-use std::io::{BufReader, Read};
-use std::net::TcpStream;
+use crate::server::connection::Connection;
 
-pub fn parse(stream: &TcpStream, configuration: &Configuration) -> Result<Request, ParserError> {
-    let mut reader = BufReader::new(stream);
+pub fn parse(connection: &mut Connection, configuration: &Configuration) -> Result<Request, ParserError> {
 
-    let (head_buffer, body_buffer) = read(&mut reader, configuration)?;
+    
+    let (head_buffer, body_buffer) = read(connection, configuration)?;
 
     let (request_line, headers) = head::parse(head_buffer, configuration)?;
     
-    let body = body::parse(&mut reader, body_buffer, &headers)?;
+    let body = body::parse(body_buffer, &headers, configuration)?;
 
     Ok(Request::new(request_line, headers, body))
 }
 
-fn read(reader: &mut BufReader<&TcpStream>, configuration: &Configuration) -> Result<(Vec<u8>, Vec<u8>), ParserError> {
+fn read(connection: &mut Connection, configuration: &Configuration) -> Result<(Vec<u8>, Vec<u8>), ParserError> {
 
     let mut head_buffer = Vec::with_capacity(1024);
 
     loop {
         let mut temp_buffer = [0u8; 512];
-        let read_bytes = reader.read(&mut temp_buffer).map_err(|_| ParserError::new(StatusCode::BadRequest, "Failed to read BufReader"))?;
+        let read_bytes = connection.read(&mut temp_buffer).map_err(|_| ParserError::new(StatusCode::BadRequest, "Failed to read BufReader"))?;
 
         if read_bytes == 0 {
             break;

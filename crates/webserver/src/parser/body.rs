@@ -6,7 +6,7 @@ use std::net::TcpStream;
 use crate::configuration::configuration::Configuration;
 use crate::http::status_code::StatusCode;
 
-pub fn parse<'a>(reader: &'a mut BufReader<&'a TcpStream>, body_buffer: Vec<u8>, headers: &Headers, configuration: &Configuration) -> Result<Body<'a>, ParserError> {
+pub fn parse(body_buffer: Vec<u8>, headers: &Headers, configuration: &Configuration) -> Result<Body, ParserError> {
     let mut body_kind = BodyKind::Empty;
 
     if headers.is_chunked() {
@@ -20,5 +20,5 @@ pub fn parse<'a>(reader: &'a mut BufReader<&'a TcpStream>, body_buffer: Vec<u8>,
         body_kind = BodyKind::Fixed(content_length);
     }
 
-    Ok(Body::new(reader, body_buffer, body_kind, configuration.server.limits.max_body_length))
+    Ok(Body::new(body_buffer, body_kind, configuration.server.limits.max_body_length))
 }

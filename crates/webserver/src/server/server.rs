@@ -1,23 +1,13 @@
 use crate::configuration::configuration::Configuration;
-use crate::http::headers::Headers;
-use crate::parser::body::parse_body;
-use crate::parser::headers::parse;
-use crate::parser::head::parse_head;
-use crate::parser::request_line::parse;
 use crate::http::response::Response;
-use crate::http::status_code::StatusCode;
+use crate::server::connection::Connection;
 use crate::server::server_error::ServerError;
-use std::io::{BufReader, Write};
+use crate::{handler, parser, routing};
+use std::io::Write;
 use std::net::{SocketAddr, TcpListener, TcpStream};
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, Mutex, mpsc};
-use std::{fs, thread};
-use std::string::ParseError;
-use log::error;
-use crate::http::request::Request;
-use crate::{handler, parser, routing};
-use crate::handler::handler_error::HandlerError;
-use crate::parser::parser_error::ParserError;
+use std::thread;
 
 pub struct Server {
     running: Arc<AtomicBool>,
@@ -116,29 +106,39 @@ impl Server {
     }
 }
 
-fn handle_connection(mut stream: TcpStream, configuration: &Configuration) {
-    let response = handle_request(&stream, configuration);
+fn handle_connection(stream: TcpStream, configuration: &Configuration) {
+    let mut connection = match Connection::new(stream) {
+        Ok(connection) => connection,
+        Err(error) => {
+            println!("Connection construction failed: {}", error.message);
+            return;
+        }
+    };
 
-    match stream.write_all(response.to_http().as_bytes()) {
+    let response = handle_request(&mut connection, configuration);
+
+    match connection.write(response) {
         Ok(_) => {}
-        Err(_) => println!("Failed to write response"), // todo review how to note this error
+        Err(error) => println!("Connection construction failed: {}", error.message),
     }
 }
 
-fn handle_request(stream: &TcpStream, configuration: &Configuration) -> Response {
-    let request = match parser::request::parse(stream, &configuration) {
+fn handle_request(connection: &mut Connection, configuration: &Configuration) -> Response {
+    // todo metadata (ip, time)
+
+    let request = match parser::request::parse(connection, &configuration) {
         Ok(request) => request,
-        Err(error) => return Response::from(error) // todo impl
+        Err(error) => return Response::from(error), // todo impl
     };
 
     let route = match routing::router::resolve(&request, &configuration) {
         Ok(route) => route,
-        Err(error) => return Response::from(error) // todo impl
+        Err(error) => return Response::from(error), // todo impl
     };
 
-    let response = match handler::route::handle(&request, route, &configuration) {
+    let response = match handler::route::handle(&request, &route, &configuration) {
         Ok(response) => response,
-        Err(error) => return Response::from(error) // todo impl
+        Err(error) => return Response::from(error), // todo impl
     };
 
     response
