@@ -26,7 +26,7 @@ impl Connection {
     }
     
     pub fn write(&mut self, response: Response) -> Result<(), ServerError> {
-        match self.reader.get_mut().write_all(response.to_http().as_bytes()) {
+        match self.reader.get_mut().write_all(&*response.to_http()) {
             Ok(_) => Ok(()),
             Err(_) => Err(ServerError::new("Failed to write response"))
         }

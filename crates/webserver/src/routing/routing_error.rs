@@ -1,9 +1,8 @@
+use crate::http::response::Response;
+use crate::http::status_code::StatusCode;
 use std::error::Error;
 use std::fmt;
 use std::fmt::{Display, Formatter};
-use crate::handler::handler_error::HandlerError;
-use crate::http::response::Response;
-use crate::http::status_code::StatusCode;
 
 #[derive(Debug)]
 pub struct RoutingError {
@@ -20,7 +19,7 @@ impl Display for RoutingError {
 impl Error for RoutingError {}
 
 impl RoutingError {
-    pub fn new<S: Into<String>>(status: StatusCode, message: S) -> Self {
+    pub fn new(status: StatusCode, message: impl Into<String>) -> Self {
         Self {
             status,
             message: message.into()

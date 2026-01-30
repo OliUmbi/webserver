@@ -20,7 +20,7 @@ impl Display for HandlerError {
 impl Error for HandlerError {}
 
 impl HandlerError {
-    pub fn new<S: Into<String>>(status: StatusCode, message: S) -> Self {
+    pub fn new(status: StatusCode, message: impl Into<String>) -> Self {
         Self {
             status,
             message: message.into()

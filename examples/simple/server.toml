@@ -6,6 +6,6 @@ threads = 8
 [routes.path]
 Prefix = "/"
 
-[routes.action.Static]
+[routes.action.Fixed]
 root = "./examples/demo/"
 fallback = "./notfound.html"

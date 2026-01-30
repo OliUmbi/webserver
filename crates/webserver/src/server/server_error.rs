@@ -17,7 +17,7 @@ impl Display for ServerError {
 impl Error for ServerError {}
 
 impl ServerError {
-    pub fn new<S: Into<String>>(message: S) -> Self {
+    pub fn new(message: impl Into<String>) -> Self {
         Self {
             message: message.into()
         }

@@ -16,7 +16,7 @@ impl Display for ConfigurationError {
 impl Error for ConfigurationError {}
 
 impl ConfigurationError {
-    pub fn new<S: Into<String>>(message: S) -> Self {
+    pub fn new(message: impl Into<String>) -> Self {
         Self {
             message: message.into()
         }

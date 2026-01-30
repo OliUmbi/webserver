@@ -3,7 +3,6 @@ use crate::http::response::Response;
 use crate::server::connection::Connection;
 use crate::server::server_error::ServerError;
 use crate::{handler, parser, routing};
-use std::io::Write;
 use std::net::{SocketAddr, TcpListener, TcpStream};
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, Mutex, mpsc};

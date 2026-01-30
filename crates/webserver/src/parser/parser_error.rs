@@ -19,7 +19,7 @@ impl Display for ParserError {
 impl Error for ParserError {}
 
 impl ParserError {
-    pub fn new<S: Into<String>>(status: StatusCode, message: S) -> Self {
+    pub fn new(status: StatusCode, message: impl Into<String>) -> Self {
         Self {
             status,
             message: message.into()

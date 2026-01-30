@@ -7,6 +7,15 @@ pub struct MediaType {
 }
 
 impl MediaType {
+    pub fn new(parent_type: TopLevelMediaType, sub_type: impl Into<String>) -> Self {
+        Self {
+            parent_type,
+            sub_type: sub_type.into(),
+            suffix: None,
+            parameter: None
+        }
+    }
+
     pub fn as_str(&self) -> String {
         let mut media_type = format!("{}/{}", self.parent_type.as_str(), self.sub_type);
 
@@ -21,7 +30,7 @@ impl MediaType {
         media_type
     }
 
-    pub fn from_str(s: &str) -> Option<Self> {
+    pub fn from_str(raw: &str) -> Option<Self> {
         todo!()
     }
 }

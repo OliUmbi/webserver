@@ -11,7 +11,7 @@ pub fn parse<'a>(raw_headers: impl Iterator<Item = &'a str>) -> Result<Headers, 
             .split_once(':')
             .ok_or_else(|| ParserError::new(StatusCode::BadRequest, "Malformed header"))?;
 
-        headers.add(name.trim().to_string(), value.trim().to_string());
+        headers.add(name.trim(), value.trim());
     }
 
     Ok(headers)

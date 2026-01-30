@@ -7,11 +7,11 @@ use crate::http::status_code::StatusCode;
 pub struct Response {
     response_line: ResponseLine,
     headers: Headers,
-    body: String
+    body: Vec<u8>
 }
 
 impl Response {
-    pub fn new(status: StatusCode, headers: Headers, body: String) -> Self {
+    pub fn new(status: StatusCode, headers: Headers, body: Vec<u8>) -> Self {
         Response {
             response_line: ResponseLine::new(Protocol::Http1_1, status),
             headers,
@@ -27,17 +27,25 @@ impl Response {
         let body = format!("Error: {}", message);
         
         let mut headers = Headers::new();
-        headers.add("Content-Type".to_string(), "text/plain".to_string());
-        headers.add("Content-Length".to_string(), format!("{}", body.len()));
+        headers.add("Content-Type", "text/plain");
+        headers.add("Content-Length", format!("{}", body.len()));
         
         Response {
             response_line: ResponseLine::new(Protocol::Http1_1, status),
             headers,
-            body            
+            body: body.into_bytes()
         }
     }
 
-    pub fn to_http(&self) -> String {
-        format!("{}\r\n{}\r\n\r\n{}", self.response_line.to_http(), self.headers.to_http(), self.body)
+    // todo review
+    pub fn to_http(&self) -> Vec<u8> {
+        let mut message = Vec::new();
+        message.extend_from_slice(self.response_line.to_http().as_bytes());
+        message.extend_from_slice("\r\n".as_bytes());
+        message.extend_from_slice(self.headers.to_http().as_bytes());
+        message.extend_from_slice("\r\n\r\n".as_bytes());
+        message.extend_from_slice(&*self.body);
+
+        message
     }
 }

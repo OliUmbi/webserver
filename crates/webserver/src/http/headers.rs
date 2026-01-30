@@ -15,8 +15,8 @@ impl Headers {
         }
     }
 
-    pub fn add(&mut self, name: String, value: String) {
-        self.values.insert(name, value);
+    pub fn add(&mut self, name: impl Into<String>, value: impl Into<String>) {
+        self.values.insert(name.into(), value.into());
     }
 
     // todo move to composer
