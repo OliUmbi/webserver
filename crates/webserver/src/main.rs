@@ -1,4 +1,10 @@
+use std::path::PathBuf;
+use crate::configuration::action::Action;
+use crate::configuration::configuration::Configuration;
 use crate::configuration::parser::parse_configuration;
+use crate::configuration::path::Path;
+use crate::configuration::route::Route;
+use crate::http::status_code::StatusCode;
 use crate::server::server::Server;
 
 mod http;
@@ -9,6 +15,29 @@ mod handler;
 pub mod parser;
 
 fn main() {
+
+    let mut routes = Vec::new();
+    routes.push(Route {
+        path: Path::Exact("/hello".to_string()),
+        action: Action::Redirect {
+            to: "index.html".to_string(),
+            code: StatusCode::TemporaryRedirect
+        }
+    });
+    routes.push(Route {
+        path: Path::Prefix("/".to_string()),
+        action: Action::Fixed {
+            root: PathBuf::from("./examples/demo/"),
+            fallback: Some(PathBuf::from("./notfound.html"))
+        }
+    });
+
+    let conf = Configuration {
+        server: configuration::server::Server::default(),
+        routes
+    };
+
+    println!("{}", toml::to_string(&conf).unwrap());
 
     let configuration = match parse_configuration("./examples/simple/server.toml") {
         Ok(configuration) => {configuration}

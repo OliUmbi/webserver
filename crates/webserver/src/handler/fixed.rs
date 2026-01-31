@@ -10,7 +10,7 @@ use crate::http::status_code::StatusCode;
 
 pub fn handle(root: &PathBuf, fallback: &Option<PathBuf>, request: &Request, configuration: &Configuration) -> Result<Response, HandlerError> {
 
-    let path = Path::new(root).join(request.request_line.url.relative());
+    let mut path = Path::new(root).join(request.request_line.url.relative());
 
     if !path.starts_with(root) {
         return Err(HandlerError::new(StatusCode::Forbidden, "Location not valid"))
@@ -21,7 +21,9 @@ pub fn handle(root: &PathBuf, fallback: &Option<PathBuf>, request: &Request, con
         Err(_) => {
             match fallback {
                 Some(fallback) => {
-                    match fs::read_to_string(fallback) {
+                    path = Path::new(root).join(fallback);
+
+                    match fs::read_to_string(&path) {
                         Ok(file) => file,
                         Err(_) => return Err(HandlerError::new(StatusCode::NotFound, "File not found"))
                     }

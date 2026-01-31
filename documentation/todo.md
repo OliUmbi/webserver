@@ -5,7 +5,7 @@
 -[x] cargo workspace setup
 -[x] plan broad architecture designs
 -[x] multithreading
--[ ] rework body and header parsing in new structure (multiline header)
+-[x] rework body and header parsing in new structure (multiline header)
 -[ ] configuration + regex
 -[ ] timeout
 -[ ] error handling 
