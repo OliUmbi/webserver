@@ -77,9 +77,40 @@ fn chunked() {
 #[test]
 fn volume() {
     for _ in 0..1000 {
-        util::request("/", "GET", "HTTP/1.1", vec!["Transfer-encoding: chunked".to_string()], "4\r\nWiki\r\n7\r\npedia i\r\nB\r\nn \r\nchunks.\r\n0\r\n\r\n");
-        sleep(Duration::from_millis(5))
+        util::request("/index.html", "GET", "HTTP/1.1", vec!["Transfer-encoding: chunked".to_string()], "4\r\nWiki\r\n7\r\npedia i\r\nB\r\nn \r\nchunks.\r\n0\r\n\r\n");
+        sleep(Duration::from_millis(2))
     }
 
     assert_eq!(200, util::request("/", "GET", "HTTP/1.1", vec!["Transfer-encoding: chunked".to_string()], "4\r\nWiki\r\n7\r\npedia i\r\nB\r\nn \r\nchunks.\r\n0\r\n\r\n"));
 }
+
+#[test]
+fn volume_concurrent() {
+    use std::thread;
+
+    let mut handles = Vec::new();
+
+    for _ in 0..20 {
+        handles.push(thread::spawn(|| {
+            for _ in 0..50 {
+                util::request(
+                    "/index.html",
+                    "GET",
+                    "HTTP/1.1",
+                    vec!["Transfer-encoding: chunked".to_string()],
+                    "4\r\nWiki\r\n7\r\npedia i\r\nB\r\nn \r\nchunks.\r\n0\r\n\r\n",
+                );
+            }
+        }));
+    }
+
+    for h in handles {
+        h.join().unwrap();
+    }
+
+    assert_eq!(
+        200,
+        util::request("/", "GET", "HTTP/1.1", vec![], "")
+    );
+}
+
