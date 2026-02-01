@@ -18,6 +18,9 @@ pub fn handle(root: &PathBuf, fallback: &Option<PathBuf>, request: &Request, con
         return Err(HandlerError::new(StatusCode::Forbidden, "Location not valid"))
     }
 
+    // todo remove
+    sleep(Duration::from_millis(50));
+
     let file = match fs::read_to_string(&path) {
         Ok(file) => file,
         Err(_) => {

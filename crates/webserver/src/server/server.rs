@@ -7,7 +7,6 @@ use std::net::{SocketAddr, TcpListener, TcpStream};
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, mpsc};
 use std::thread;
-use ratatui::run;
 use crate::telemetry::telemetry::Telemetry;
 
 pub struct Server {
@@ -29,7 +28,7 @@ impl Server {
         let mut worker_senders = Vec::with_capacity(configuration.server.threads);
         let mut worker_receivers = Vec::with_capacity(configuration.server.threads);
         for _ in 0..configuration.server.threads {
-            let (worker_sender, worker_receiver) = mpsc::sync_channel::<TcpStream>(1);
+            let (worker_sender, worker_receiver) = mpsc::sync_channel::<TcpStream>(configuration.server.connections);
             worker_senders.push(worker_sender);
             worker_receivers.push(worker_receiver);
         }
@@ -38,7 +37,7 @@ impl Server {
 
         let acceptor = Self::start_acceptor(listener, running.clone(), dispatch_sender, telemetry.clone());
 
-        let dispatcher = Self::start_dispatcher(running.clone(), dispatch_receiver, worker_senders);
+        let dispatcher = Self::start_dispatcher(running.clone(), dispatch_receiver, worker_senders, telemetry.clone());
 
         let workers = Self::start_workers(configuration.clone(), running.clone(), worker_receivers, telemetry.clone());
 
@@ -73,23 +72,18 @@ impl Server {
 
     fn start_acceptor(listener: TcpListener, running: Arc<AtomicBool>, dispatch_sender: mpsc::SyncSender<TcpStream>, telemetry: Arc<Telemetry>) -> thread::JoinHandle<()> {
         thread::spawn(move || {
-
-            println!("Acceptor started");
+            telemetry.event_info("Acceptor started");
 
             for stream in listener.incoming() {
                 if !running.load(Ordering::Acquire) {
-
-                    println!("Acceptor shutdown");
-
+                    telemetry.event_info("Acceptor shutdown");
                     break;
                 }
 
                 let stream = match stream {
                     Ok(stream) => stream,
                     Err(_) => {
-
-                        println!("Stream connection failed"); // todo investigate what to do if connection failed
-
+                        telemetry.event_error("Stream connection failed");
                         continue;
                     }
                 };
@@ -98,30 +92,31 @@ impl Server {
                 telemetry.connection_start();
 
                 if dispatch_sender.send(stream).is_err() {
-
-                    println!("Acceptor shutdown");
-
+                    telemetry.event_info("Acceptor shutdown");
                     break;
                 }
             }
         })
     }
 
-    fn start_dispatcher(running: Arc<AtomicBool>, dispatch_receiver: mpsc::Receiver<TcpStream>, worker_senders: Vec<mpsc::SyncSender<TcpStream>>) -> thread::JoinHandle<()> {
+    fn start_dispatcher(running: Arc<AtomicBool>, dispatch_receiver: mpsc::Receiver<TcpStream>, worker_senders: Vec<mpsc::SyncSender<TcpStream>>, telemetry: Arc<Telemetry>) -> thread::JoinHandle<()> {
         thread::spawn(move || {
+            telemetry.event_info("Dispatcher started");
             let mut next = 0;
 
             while running.load(Ordering::Acquire) {
                 let stream = match dispatch_receiver.recv() {
                     Ok(stream) => stream,
-                    Err(_) => break,
+                    Err(_) => {
+                        telemetry.event_info("Dispatcher shutdown");
+                        break
+                    },
                 };
 
-                // todo telemetry dispatcher_telemetry.connection_start();
-
                 let worker_sender = &worker_senders[next];
-                // todo error handling
+
                 if worker_sender.send(stream).is_err() {
+                    telemetry.event_info("Dispatcher shutdown");
                     break;
                 }
 
@@ -135,34 +130,33 @@ impl Server {
         let mut workers = Vec::with_capacity(configuration.server.threads);
 
         for (id, worker_receiver) in worker_receivers.into_iter().enumerate() {
-            let worker_running = Arc::clone(&running);
-            let worker_configuration = Arc::clone(&configuration);
-            let worker_telemetry = Arc::clone(&telemetry);
-
-            workers.push(thread::spawn(move || {
-
-                println!("Worker-{} started", id);
-
-                while worker_running.load(Ordering::Acquire) {
-                    match worker_receiver.recv() {
-                        Ok(stream) => {
-                            worker_telemetry.worker_start();
-
-                            handle_connection(stream, &worker_configuration, &worker_telemetry);
-
-                            worker_telemetry.worker_end();
-                            worker_telemetry.connection_end();
-                        },
-                        Err(_) => {
-                            println!("Worker-{} shutdown", id);
-                            break;
-                        }
-                    };
-                }
-            }));
+            workers.push(Self::start_worker(id, configuration.clone(), running.clone(), worker_receiver, telemetry.clone()));
         }
 
         workers
+    }
+
+    fn start_worker(id: usize, configuration: Arc<Configuration>, running: Arc<AtomicBool>, worker_receiver: mpsc::Receiver<TcpStream>, telemetry: Arc<Telemetry>) -> thread::JoinHandle<()> {
+        thread::spawn(move || {
+            telemetry.event_info(format!("Worker-{} started", id));
+
+            while running.load(Ordering::Acquire) {
+                match worker_receiver.recv() {
+                    Ok(stream) => {
+                        telemetry.worker_start();
+
+                        handle_connection(stream, &configuration, &telemetry);
+
+                        telemetry.worker_end();
+                        telemetry.connection_end();
+                    },
+                    Err(_) => {
+                        telemetry.event_info(format!("Worker-{} shutdown", id));
+                        break;
+                    }
+                };
+            }
+        })
     }
 }
 
@@ -170,28 +164,30 @@ fn handle_connection(stream: TcpStream, configuration: &Configuration, telemetry
     let mut connection = match Connection::new(stream) {
         Ok(connection) => connection,
         Err(error) => {
-            println!("Connection construction failed: {}", error.message);
+            telemetry.event_error(format!("Connection construction failed: {}", error.message));
             return;
         }
     };
 
     telemetry.request_add();
 
-    let response = handle_request(&mut connection, configuration);
+    let response = handle_request(&mut connection, configuration, telemetry);
 
     match connection.write(response) {
         Ok(_) => {}
-        Err(error) => println!("Connection construction failed: {}", error.message),
+        Err(error) => telemetry.event_error(format!("Connection write failed: {}", error.message)),
     }
 }
 
-fn handle_request(connection: &mut Connection, configuration: &Configuration) -> Response {
+fn handle_request(connection: &mut Connection, configuration: &Configuration, telemetry: &Telemetry) -> Response {
     // todo metadata (ip, time)
 
     let request = match parser::request::parse(connection, &configuration) {
         Ok(request) => request,
         Err(error) => return Response::from(error), // todo impl
     };
+
+    telemetry.event_request(request.request_line.method.as_str(), &request.request_line.url.raw);
 
     let route = match routing::router::resolve(&request, &configuration) {
         Ok(route) => route,

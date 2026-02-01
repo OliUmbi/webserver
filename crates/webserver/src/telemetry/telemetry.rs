@@ -1,8 +1,5 @@
 use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::mpsc;
-use crate::http::method::Method;
-use crate::http::url::Url;
-
 #[derive(Debug)]
 pub struct Telemetry {
     workers: AtomicUsize,
@@ -11,8 +8,10 @@ pub struct Telemetry {
     event_sender: mpsc::Sender<TelemetryEvent>
 }
 
+#[derive(Debug)]
 pub enum TelemetryEvent {
-    Request { method: Method, url: Url },
+    Request { method: String, url: String },
+    Info { message: String },
     Error { message: String }
 }
 
@@ -59,16 +58,22 @@ impl Telemetry {
     }
 
     // todo handle error maybe
-    pub fn event_request(&self, method: Method, url: Url)  {
+    pub fn event_request(&self, method: impl Into<String>, url: impl Into<String>)  {
         let _ = self.event_sender.send(TelemetryEvent::Request {
-            method,
-            url
+            method: method.into(),
+            url: url.into()
         });
     }
 
-    pub fn event_error(&self, message: String)  {
+    pub fn event_info(&self, message: impl Into<String>)  {
+        let _ = self.event_sender.send(TelemetryEvent::Info {
+            message: message.into()
+        });
+    }
+
+    pub fn event_error(&self, message: impl Into<String>)  {
         let _ = self.event_sender.send(TelemetryEvent::Error {
-            message
+            message: message.into()
         });
     }
 }
