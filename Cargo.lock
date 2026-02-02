@@ -1454,7 +1454,6 @@ name = "webserver"
 version = "0.1.0"
 dependencies = [
  "crossterm",
- "log",
  "ratatui",
  "regex",
  "serde",

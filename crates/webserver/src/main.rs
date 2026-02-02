@@ -2,6 +2,7 @@ use crate::configuration::parser::parse_configuration;
 use crate::server::server::Server;
 use crate::telemetry::telemetry::Telemetry;
 use std::sync::{mpsc, Arc};
+use crate::tui::tui::Tui;
 
 mod http;
 mod server;
@@ -55,7 +56,9 @@ fn main() {
         Err(error) => panic!("{}", error.message)
     };
 
-    tui::tui::run(telemetry.clone(), event_receiver);
+    let mut tui = Tui::new(telemetry, event_receiver);
+
+    tui::render::render(&mut tui).unwrap();
 
     server.shutdown();
 

@@ -26,10 +26,6 @@ impl HandlerError {
             message: message.into()
         }
     }
-
-    pub fn bad_request(message: String) -> Self {
-        Self::new(StatusCode::BadRequest, message)
-    }
 }
 
 impl From<HandlerError> for Response {
