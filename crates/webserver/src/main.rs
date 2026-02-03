@@ -32,7 +32,7 @@ fn main() {
 
     let mut tui = Tui::new(telemetry, event_receiver);
 
-    match tui::render::render(&mut tui) {
+    match tui::render::render(&mut tui, &configuration) {
         Ok(_) => (),
         Err(error) => panic!("{}", error.message),
     };

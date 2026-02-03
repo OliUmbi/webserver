@@ -1,3 +1,4 @@
+use crate::configuration::internal::configuration::Configuration;
 use crate::tui::tui::Tui;
 use crate::tui::tui_error::TuiError;
 use crossterm::event::{poll, Event, KeyCode};
@@ -7,29 +8,38 @@ use crossterm::terminal::{
 use crossterm::{event, execute};
 use ratatui::backend::CrosstermBackend;
 use ratatui::layout::{Constraint, Direction, Layout, Rect};
-use ratatui::prelude::{Color, Line, Style};
+use ratatui::prelude::{Color, Style};
+use ratatui::text::Text;
+use ratatui::widgets::ListDirection::BottomToTop;
 use ratatui::widgets::{
-    Block, Borders, Gauge, Paragraph, Sparkline,
+    Block, Borders, Gauge, List, ListItem, Paragraph, Sparkline,
 };
 use ratatui::{Frame, Terminal};
 use std::io;
 use std::io::Stdout;
+use std::sync::Arc;
 use std::time::Duration;
 
 const TICK_RATE: Duration = Duration::from_millis(200);
 
-pub fn render(tui: &mut Tui) -> Result<(), TuiError> {
+pub fn render(tui: &mut Tui, configuration: &Arc<Configuration>) -> Result<(), TuiError> {
     let mut terminal = setup().map_err(|_| TuiError::new("Failed to setup terminal"))?;
 
     loop {
         tui.update();
 
-        // todo maybe move draw to a function
         terminal
             .draw(|frame| {
-                let [area_head, area_body] = Layout::default()
+                let [area_head, area_body, area_foot] = Layout::default()
                     .direction(Direction::Vertical)
-                    .constraints([Constraint::Length(10), Constraint::Min(0)].as_ref())
+                    .constraints(
+                        [
+                            Constraint::Length(10),
+                            Constraint::Min(0),
+                            Constraint::Length(3),
+                        ]
+                        .as_ref(),
+                    )
                     .areas(frame.area());
 
                 let [area_stats, area_requests] = Layout::default()
@@ -42,10 +52,11 @@ pub fn render(tui: &mut Tui) -> Result<(), TuiError> {
                     .constraints([Constraint::Percentage(50), Constraint::Percentage(50)].as_ref())
                     .areas(area_stats);
 
-                render_workers(frame, area_workers, tui);
-                render_connections(frame, area_connections, tui);
+                render_workers(frame, area_workers, tui, configuration);
+                render_connections(frame, area_connections, tui, configuration);
                 render_requests(frame, area_requests, tui);
                 render_events(frame, area_body, tui);
+                render_commands(frame, area_foot)
             })
             .map_err(|_| TuiError::new("Failed to draw terminal"))?;
 
@@ -74,7 +85,7 @@ fn restore(mut terminal: Terminal<CrosstermBackend<Stdout>>) -> io::Result<()> {
     terminal.show_cursor()
 }
 
-fn render_workers(frame: &mut Frame, area: Rect, tui: &Tui) {
+fn render_workers(frame: &mut Frame, area: Rect, tui: &Tui, configuration: &Arc<Configuration>) {
     let data = tui.telemetry.workers();
 
     let block = Block::default().title("Workers").borders(Borders::ALL);
@@ -82,13 +93,18 @@ fn render_workers(frame: &mut Frame, area: Rect, tui: &Tui) {
     let workers = Gauge::default()
         .block(block)
         .gauge_style(Style::default().fg(Color::Yellow))
-        .ratio(data as f64 / 8.0)
-        .label(format!("{}/8", data));
+        .ratio(data as f64 / configuration.server.threads as f64)
+        .label(format!("{}/{}", data, configuration.server.threads));
 
     frame.render_widget(workers, area);
 }
 
-fn render_connections(frame: &mut Frame, area: Rect, tui: &Tui) {
+fn render_connections(
+    frame: &mut Frame,
+    area: Rect,
+    tui: &Tui,
+    configuration: &Arc<Configuration>,
+) {
     let data = tui.telemetry.connections();
 
     let block = Block::default().title("Connections").borders(Borders::ALL);
@@ -96,15 +112,17 @@ fn render_connections(frame: &mut Frame, area: Rect, tui: &Tui) {
     let connections = Gauge::default()
         .block(block)
         .gauge_style(Style::default().fg(Color::Red))
-        .ratio(data as f64 / 40.0)
-        .label(format!("{}/1024", data));
+        .ratio(data as f64 / configuration.server.connections as f64)
+        .label(format!("{}/{}", data, configuration.server.connections));
 
     frame.render_widget(connections, area);
 }
 
 fn render_requests(frame: &mut Frame, area: Rect, tui: &Tui) {
+    let block = Block::new().title("Requests").borders(Borders::ALL);
+
     let requests = Sparkline::default()
-        .block(Block::new().title("Requests").borders(Borders::ALL))
+        .block(block)
         .data(tui.requests_history.clone())
         .style(Style::default().fg(Color::Blue));
 
@@ -112,24 +130,25 @@ fn render_requests(frame: &mut Frame, area: Rect, tui: &Tui) {
 }
 
 fn render_events(frame: &mut Frame, area: Rect, tui: &Tui) {
-    let log_block = Block::default().title("Event Log").borders(Borders::ALL);
-    let log_lines: Vec<Line> = tui
+    let block = Block::default().title("Events").borders(Borders::ALL);
+
+    let items: Vec<ListItem> = tui
         .event_history
         .iter()
-        .map(|e| Line::from(e.clone()))
+        .map(|event| ListItem::new(event.as_str()))
         .collect();
 
-    let height = area.height as usize;
-    let total_events = tui.event_history.len();
-    let scroll = if total_events > height {
-        total_events - height
-    } else {
-        0
-    };
+    let events = List::new(items).block(block).direction(BottomToTop);
 
-    let events = Paragraph::new(log_lines)
-        .block(log_block)
-        .scroll((scroll as u16, 0));
+    frame.render_widget(events, area)
+}
 
-    frame.render_widget(events, area);
+fn render_commands(frame: &mut Frame, area: Rect) {
+    let block = Block::default().title("Commands").borders(Borders::ALL);
+
+    let text = Text::raw("[Q] Quit");
+
+    let commands = Paragraph::new(text).block(block);
+
+    frame.render_widget(commands, area)
 }

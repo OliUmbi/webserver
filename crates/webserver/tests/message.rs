@@ -26,7 +26,7 @@ fn method_unknown() {
 
 #[test]
 fn url_missing() {
-    assert_eq!(400, util::request("", "GET", "HTTP/1.1", vec!["Host: Yeet".to_string()], ""));
+    assert_eq!(404, util::request("", "GET", "HTTP/1.1", vec!["Host: Yeet".to_string()], ""));
 }
 
 #[test]

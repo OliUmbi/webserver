@@ -1,3 +1,4 @@
+use std::collections::VecDeque;
 use std::sync::{mpsc, Arc};
 use std::time::{Duration, Instant};
 
@@ -10,7 +11,7 @@ pub struct Tui {
     event_receiver: mpsc::Receiver<TelemetryEvent>,
     tick: Instant,
     pub telemetry: Arc<Telemetry>,
-    pub event_history: Vec<String>,
+    pub event_history: VecDeque<String>,
     pub requests_history: Vec<u64>,
 }
 
@@ -20,7 +21,7 @@ impl Tui {
             event_receiver,
             tick: Instant::now(),
             telemetry,
-            event_history: Vec::with_capacity(MAX_EVENT_HISTORY),
+            event_history: VecDeque::with_capacity(MAX_EVENT_HISTORY),
             requests_history: Vec::with_capacity(MAX_REQUESTS_HISTORY),
         }
     }
@@ -39,10 +40,10 @@ impl Tui {
 
         while let Ok(event) = self.event_receiver.try_recv() {
             if self.event_history.len() >= MAX_EVENT_HISTORY {
-                self.event_history.remove(0);
+                self.event_history.pop_back();
             }
 
-            self.event_history.push(format!("{:?}", event));
+            self.event_history.push_front(format!("{:?}", event));
         }
     }
 }
