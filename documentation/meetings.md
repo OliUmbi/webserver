@@ -62,3 +62,10 @@
   - Monday feedback round 
 - feedback
   - regex match insert
+
+## 04.02. Wednesday
+09:30 - 10:00, 5.2B34
+
+### Topics
+- Kompetenzen wählen
+
