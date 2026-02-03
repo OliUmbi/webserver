@@ -1,9 +1,6 @@
 use std::error::Error;
 use std::fmt;
 use std::fmt::{Display, Formatter};
-use crate::http::response::Response;
-use crate::http::status_code::StatusCode;
-use crate::parser::parser_error::ParserError;
 
 #[derive(Debug)]
 pub struct TuiError {
@@ -21,7 +18,7 @@ impl Error for TuiError {}
 impl TuiError {
     pub fn new(message: impl Into<String>) -> Self {
         Self {
-            message: message.into()
+            message: message.into(),
         }
     }
 }

@@ -2,7 +2,7 @@ use std::error::Error;
 use std::fmt;
 use std::fmt::{Display, Formatter};
 
-// todo rethink splitting request errors 
+// todo rethink splitting request errors
 #[derive(Debug)]
 pub struct ServerError {
     pub message: String,
@@ -19,10 +19,7 @@ impl Error for ServerError {}
 impl ServerError {
     pub fn new(message: impl Into<String>) -> Self {
         Self {
-            message: message.into()
+            message: message.into(),
         }
     }
 }
-
-
-

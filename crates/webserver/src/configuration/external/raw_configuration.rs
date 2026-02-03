@@ -1,8 +1,8 @@
-use serde::{Deserialize, Serialize};
 use crate::configuration::configuration_error::ConfigurationError;
 use crate::configuration::external::raw_route::RawRoute;
 use crate::configuration::external::raw_server::RawServer;
 use crate::configuration::internal::configuration::Configuration;
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct RawConfiguration {
@@ -19,9 +19,11 @@ impl TryFrom<RawConfiguration> for Configuration {
     fn try_from(raw: RawConfiguration) -> Result<Self, Self::Error> {
         Ok(Self {
             server: raw.server.try_into()?,
-            routes: raw.routes.into_iter()
+            routes: raw
+                .routes
+                .into_iter()
                 .map(TryInto::try_into)
-                .collect::<Result<_, _>>()?
+                .collect::<Result<_, _>>()?,
         })
     }
 }

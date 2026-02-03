@@ -1,3 +1,3 @@
+pub mod connection;
 pub mod server;
 pub mod server_error;
-pub mod connection;

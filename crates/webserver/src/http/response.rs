@@ -7,7 +7,7 @@ use crate::http::status_code::StatusCode;
 pub struct Response {
     response_line: ResponseLine,
     headers: Headers,
-    body: Vec<u8>
+    body: Vec<u8>,
 }
 
 impl Response {
@@ -15,25 +15,24 @@ impl Response {
         Response {
             response_line: ResponseLine::new(Protocol::Http1_1, status),
             headers,
-            body
+            body,
         }
     }
-    
+
     // todo implement a content-length system that works for multiple use cases
-    
+
     // todo rework
     pub fn error(status: StatusCode, message: String) -> Self {
-
         let body = format!("Error: {}", message);
-        
+
         let mut headers = Headers::new();
         headers.add("Content-Type", "text/plain");
         headers.add("Content-Length", format!("{}", body.len()));
-        
+
         Response {
             response_line: ResponseLine::new(Protocol::Http1_1, status),
             headers,
-            body: body.into_bytes()
+            body: body.into_bytes(),
         }
     }
 

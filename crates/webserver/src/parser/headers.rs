@@ -1,9 +1,8 @@
 use crate::http::headers::Headers;
-use crate::parser::parser_error::ParserError;
 use crate::http::status_code::StatusCode;
+use crate::parser::parser_error::ParserError;
 
 pub fn parse<'a>(raw_headers: impl Iterator<Item = &'a str>) -> Result<Headers, ParserError> {
-
     let mut headers = Headers::new();
 
     for raw_header in raw_headers {
@@ -16,5 +15,3 @@ pub fn parse<'a>(raw_headers: impl Iterator<Item = &'a str>) -> Result<Headers, 
 
     Ok(headers)
 }
-
-

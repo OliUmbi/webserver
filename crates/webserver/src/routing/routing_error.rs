@@ -22,7 +22,7 @@ impl RoutingError {
     pub fn new(status: StatusCode, message: impl Into<String>) -> Self {
         Self {
             status,
-            message: message.into()
+            message: message.into(),
         }
     }
 

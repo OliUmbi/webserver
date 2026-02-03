@@ -1,4 +1,4 @@
-use std::sync::{Arc, mpsc};
+use std::sync::{mpsc, Arc};
 use std::time::{Duration, Instant};
 
 use crate::telemetry::telemetry::{Telemetry, TelemetryEvent};

@@ -6,7 +6,7 @@ use crate::http::url::Url;
 pub struct RequestLine {
     pub method: Method,
     pub url: Url,
-    pub protocol: Protocol
+    pub protocol: Protocol,
 }
 
 impl RequestLine {
@@ -14,7 +14,7 @@ impl RequestLine {
         RequestLine {
             method,
             url,
-            protocol
+            protocol,
         }
     }
 }

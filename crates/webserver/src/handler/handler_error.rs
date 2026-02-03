@@ -1,9 +1,8 @@
+use crate::http::response::Response;
+use crate::http::status_code::StatusCode;
 use std::error::Error;
 use std::fmt;
 use std::fmt::{Display, Formatter};
-use crate::http::response::Response;
-use crate::http::status_code::StatusCode;
-use crate::parser::parser_error::ParserError;
 
 #[derive(Debug)]
 pub struct HandlerError {
@@ -23,7 +22,7 @@ impl HandlerError {
     pub fn new(status: StatusCode, message: impl Into<String>) -> Self {
         Self {
             status,
-            message: message.into()
+            message: message.into(),
         }
     }
 }

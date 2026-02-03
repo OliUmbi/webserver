@@ -146,7 +146,7 @@ impl StatusCode {
             StatusCode::NetworkAuthenticationRequired => "Network Authentication Required",
         }
     }
-    
+
     pub fn to_http(&self) -> String {
         format!("{} {}", self.code(), self.as_str())
     }
@@ -161,7 +161,7 @@ impl TryFrom<u16> for StatusCode {
             101 => Ok(StatusCode::SwitchingProtocols),
             102 => Ok(StatusCode::Processing),
             103 => Ok(StatusCode::EarlyHints),
-            
+
             200 => Ok(StatusCode::Ok),
             201 => Ok(StatusCode::Created),
             202 => Ok(StatusCode::Accepted),
@@ -172,7 +172,7 @@ impl TryFrom<u16> for StatusCode {
             207 => Ok(StatusCode::MultiStatus),
             208 => Ok(StatusCode::AlreadyReported),
             226 => Ok(StatusCode::IMUsed),
-            
+
             300 => Ok(StatusCode::MultipleChoices),
             301 => Ok(StatusCode::MovedPermanently),
             302 => Ok(StatusCode::Found),
@@ -181,7 +181,7 @@ impl TryFrom<u16> for StatusCode {
             305 => Ok(StatusCode::UseProxy),
             307 => Ok(StatusCode::TemporaryRedirect),
             308 => Ok(StatusCode::PermanentRedirect),
-            
+
             400 => Ok(StatusCode::BadRequest),
             401 => Ok(StatusCode::Unauthorized),
             402 => Ok(StatusCode::PaymentRequired),
@@ -211,7 +211,7 @@ impl TryFrom<u16> for StatusCode {
             429 => Ok(StatusCode::TooManyRequests),
             431 => Ok(StatusCode::RequestHeaderFieldsTooLarge),
             451 => Ok(StatusCode::UnavailableForLegalReasons),
-            
+
             500 => Ok(StatusCode::InternalServerError),
             501 => Ok(StatusCode::NotImplemented),
             502 => Ok(StatusCode::BadGateway),
@@ -223,7 +223,7 @@ impl TryFrom<u16> for StatusCode {
             508 => Ok(StatusCode::LoopDetected),
             510 => Ok(StatusCode::NotExtended),
             511 => Ok(StatusCode::NetworkAuthenticationRequired),
-            
+
             _ => Err(()),
         }
     }

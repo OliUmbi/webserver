@@ -7,7 +7,7 @@ pub enum Method {
     Delete,
     Connect,
     Options,
-    Trace
+    Trace,
 }
 
 impl Method {
@@ -35,7 +35,7 @@ impl Method {
             "CONNECT" => Some(Method::Connect),
             "OPTIONS" => Some(Method::Options),
             "TRACE" => Some(Method::Trace),
-            _ => None
+            _ => None,
         }
     }
 }

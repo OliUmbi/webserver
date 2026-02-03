@@ -5,14 +5,14 @@ pub struct Telemetry {
     workers: AtomicUsize,
     connections: AtomicUsize,
     requests: AtomicUsize,
-    event_sender: mpsc::Sender<TelemetryEvent>
+    event_sender: mpsc::Sender<TelemetryEvent>,
 }
 
 #[derive(Debug)]
 pub enum TelemetryEvent {
     Request { method: String, url: String },
     Info { message: String },
-    Error { message: String }
+    Error { message: String },
 }
 
 impl Telemetry {
@@ -21,7 +21,7 @@ impl Telemetry {
             workers: AtomicUsize::new(0),
             connections: AtomicUsize::new(0),
             requests: AtomicUsize::new(0),
-            event_sender
+            event_sender,
         }
     }
 
@@ -58,22 +58,22 @@ impl Telemetry {
     }
 
     // todo handle error maybe
-    pub fn event_request(&self, method: impl Into<String>, url: impl Into<String>)  {
+    pub fn event_request(&self, method: impl Into<String>, url: impl Into<String>) {
         let _ = self.event_sender.send(TelemetryEvent::Request {
             method: method.into(),
-            url: url.into()
+            url: url.into(),
         });
     }
 
-    pub fn event_info(&self, message: impl Into<String>)  {
+    pub fn event_info(&self, message: impl Into<String>) {
         let _ = self.event_sender.send(TelemetryEvent::Info {
-            message: message.into()
+            message: message.into(),
         });
     }
 
-    pub fn event_error(&self, message: impl Into<String>)  {
+    pub fn event_error(&self, message: impl Into<String>) {
         let _ = self.event_sender.send(TelemetryEvent::Error {
-            message: message.into()
+            message: message.into(),
         });
     }
 }

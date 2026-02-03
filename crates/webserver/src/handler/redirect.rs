@@ -5,8 +5,12 @@ use crate::http::request::Request;
 use crate::http::response::Response;
 use crate::http::status_code::StatusCode;
 
-pub fn handle(location: &String, status_code: &StatusCode, request: &Request, configuration: &Configuration) -> Result<Response, HandlerError> {
-
+pub fn handle(
+    location: &String,
+    status_code: &StatusCode,
+    request: &Request,
+    configuration: &Configuration,
+) -> Result<Response, HandlerError> {
     let mut headers = Headers::new();
     headers.add("Location", location);
 

@@ -12,7 +12,7 @@ impl MediaType {
             parent_type,
             sub_type: sub_type.into(),
             suffix: None,
-            parameter: None
+            parameter: None,
         }
     }
 

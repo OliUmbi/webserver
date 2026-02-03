@@ -5,7 +5,7 @@ use crate::http::request_line::RequestLine;
 pub struct Request {
     pub request_line: RequestLine,
     pub headers: Headers,
-    pub body: Body
+    pub body: Body,
 }
 
 impl Request {
@@ -13,7 +13,7 @@ impl Request {
         Self {
             request_line,
             headers,
-            body
+            body,
         }
     }
 }

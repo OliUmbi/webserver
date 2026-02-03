@@ -1,15 +1,16 @@
-use std::cmp::min;
 use crate::tui::tui::Tui;
 use crate::tui::tui_error::TuiError;
-use crossterm::event::{Event, KeyCode, poll};
+use crossterm::event::{poll, Event, KeyCode};
 use crossterm::terminal::{
-    EnterAlternateScreen, LeaveAlternateScreen, disable_raw_mode, enable_raw_mode,
+    disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen,
 };
 use crossterm::{event, execute};
 use ratatui::backend::CrosstermBackend;
 use ratatui::layout::{Constraint, Direction, Layout, Rect};
-use ratatui::prelude::{Color, Line, Span, Style};
-use ratatui::widgets::{Axis, Block, Borders, Chart, Dataset, Gauge, Paragraph, Sparkline, SparklineBar};
+use ratatui::prelude::{Color, Line, Style};
+use ratatui::widgets::{
+    Block, Borders, Gauge, Paragraph, Sparkline,
+};
 use ratatui::{Frame, Terminal};
 use std::io;
 use std::io::Stdout;
@@ -76,9 +77,7 @@ fn restore(mut terminal: Terminal<CrosstermBackend<Stdout>>) -> io::Result<()> {
 fn render_workers(frame: &mut Frame, area: Rect, tui: &Tui) {
     let data = tui.telemetry.workers();
 
-    let block = Block::default()
-        .title("Workers")
-        .borders(Borders::ALL);
+    let block = Block::default().title("Workers").borders(Borders::ALL);
 
     let workers = Gauge::default()
         .block(block)
@@ -92,9 +91,7 @@ fn render_workers(frame: &mut Frame, area: Rect, tui: &Tui) {
 fn render_connections(frame: &mut Frame, area: Rect, tui: &Tui) {
     let data = tui.telemetry.connections();
 
-    let block = Block::default()
-        .title("Connections")
-        .borders(Borders::ALL);
+    let block = Block::default().title("Connections").borders(Borders::ALL);
 
     let connections = Gauge::default()
         .block(block)
@@ -107,11 +104,7 @@ fn render_connections(frame: &mut Frame, area: Rect, tui: &Tui) {
 
 fn render_requests(frame: &mut Frame, area: Rect, tui: &Tui) {
     let requests = Sparkline::default()
-        .block(
-            Block::new()
-                .title("Requests")
-                .borders(Borders::ALL),
-        )
+        .block(Block::new().title("Requests").borders(Borders::ALL))
         .data(tui.requests_history.clone())
         .style(Style::default().fg(Color::Blue));
 

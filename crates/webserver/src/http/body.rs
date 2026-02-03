@@ -19,7 +19,7 @@ impl Body {
         Self {
             buffer,
             kind,
-            max_body_length
+            max_body_length,
         }
     }
 
@@ -31,9 +31,16 @@ impl Body {
         }
     }
 
-    fn read_fixed(&mut self, connection: &mut Connection, content_length: usize) -> Result<Vec<u8>, ParserError> {
+    fn read_fixed(
+        &mut self,
+        connection: &mut Connection,
+        content_length: usize,
+    ) -> Result<Vec<u8>, ParserError> {
         if content_length > self.max_body_length {
-            return Err(ParserError::new(StatusCode::ContentTooLarge, "Body too large"));
+            return Err(ParserError::new(
+                StatusCode::ContentTooLarge,
+                "Body too large",
+            ));
         }
 
         if self.buffer.len() > content_length {
@@ -42,7 +49,9 @@ impl Body {
             let missing = content_length - self.buffer.len();
             let mut rest = vec![0u8; missing];
 
-            connection.read_exact(&mut rest).map_err(|_| ParserError::new(StatusCode::BadRequest, "Failed to read body"))?;
+            connection
+                .read_exact(&mut rest)
+                .map_err(|_| ParserError::new(StatusCode::BadRequest, "Failed to read body"))?;
             self.buffer.extend(rest);
         }
 
