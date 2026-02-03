@@ -228,3 +228,14 @@ impl TryFrom<u16> for StatusCode {
         }
     }
 }
+
+impl TryFrom<String> for StatusCode {
+    type Error = ();
+
+    fn try_from(value: String) -> Result<Self, Self::Error> {
+        let value = value.parse::<u16>().map_err(|_| ())?;
+        
+        StatusCode::try_from(value)
+    }
+}
+

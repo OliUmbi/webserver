@@ -13,7 +13,7 @@
 -[x] hardware / deployment
 -[ ] improve testing and benching framework
 -[x] console view of current stats (num requests, top urls, metadata, threads, pressure, etc)
--[ ] reverse proxy
+-[x] reverse proxy
 -[ ] testing setup 
 -[ ] rework event log
 -[ ] headless mode

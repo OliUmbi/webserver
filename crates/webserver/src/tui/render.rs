@@ -44,7 +44,7 @@ pub fn render(tui: &mut Tui, configuration: &Arc<Configuration>) -> Result<(), T
 
                 let [area_stats, area_requests] = Layout::default()
                     .direction(Direction::Horizontal)
-                    .constraints([Constraint::Percentage(40), Constraint::Percentage(60)].as_ref())
+                    .constraints([Constraint::Percentage(30), Constraint::Percentage(70)].as_ref())
                     .areas(area_head);
 
                 let [area_workers, area_connections] = Layout::default()

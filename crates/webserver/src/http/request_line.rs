@@ -17,4 +17,8 @@ impl RequestLine {
             protocol,
         }
     }
+
+    pub fn to_http(&self) -> String {
+        format!("{} {} {}", self.method.as_str(), self.url.raw, self.protocol.to_string())
+    }
 }

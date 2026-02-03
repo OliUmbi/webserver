@@ -5,51 +5,28 @@ use crate::http::status_code::StatusCode;
 use crate::http::url::Url;
 use crate::parser::parser_error::ParserError;
 
-pub fn parse(raw_request_line: &str) -> Result<RequestLine, ParserError> {
-    // todo review this maybe bad when no headers are specified
-
+pub fn parse(raw_request_line: String) -> Result<RequestLine, ParserError> {
     let mut components = raw_request_line.split(" ");
 
-    let method = match components.next() {
-        Some(value) => match Method::from_str(value) {
-            Some(method) => method,
-            None => {
-                return Err(ParserError::new(
-                    StatusCode::BadRequest,
-                    format!("Invalid method: {}", value),
-                ));
-            }
-        },
-        None => {
-            return Err(ParserError::new(
-                StatusCode::BadRequest,
-                "Request line invalid, method missing",
-            ));
-        }
-    };
+    let raw_method = components
+        .next()
+        .ok_or_else(|| ParserError::new(StatusCode::BadGateway, "Method missing"))?;
 
-    let url = match components.next() {
-        Some(value) => Url::from_str(value),
-        None => {
-            return Err(ParserError::new(
-                StatusCode::BadRequest,
-                "Request line invalid, url missing",
-            ));
-        }
-    };
+    let method = Method::from_str(raw_method)
+        .ok_or_else(|| ParserError::new(StatusCode::BadGateway, "Invalid method"))?;
 
-    let protocol = match components.next() {
-        Some(value) => match Protocol::from_str(value) {
-            Some(protocol) => protocol,
-            None => return Err(ParserError::new(StatusCode::BadRequest, "Invalid protocol")),
-        },
-        None => {
-            return Err(ParserError::new(
-                StatusCode::BadRequest,
-                "Request line invalid, protocol missing".to_string(),
-            ));
-        }
-    };
+    let raw_url = components
+        .next()
+        .ok_or_else(|| ParserError::new(StatusCode::BadGateway, "Url missing"))?;
+
+    let url = Url::from_str(raw_url);
+
+    let raw_protocol = components
+        .next()
+        .ok_or_else(|| ParserError::new(StatusCode::BadGateway, "Protocol missing"))?;
+
+    let protocol = Protocol::from_str(raw_protocol)
+        .ok_or_else(|| ParserError::new(StatusCode::BadGateway, "Invalid protocol"))?;
 
     Ok(RequestLine::new(method, url, protocol))
 }

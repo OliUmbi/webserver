@@ -23,19 +23,23 @@ impl Body {
         }
     }
 
-    pub fn read(&mut self, connection: &mut Connection) -> Result<Vec<u8>, ParserError> {
+    pub fn read(&mut self, connection: &mut Connection) -> Result<(), ParserError> {
         match self.kind {
             BodyKind::Fixed(content_length) => self.read_fixed(connection, content_length),
             BodyKind::Chunked => self.read_chunked(connection),
-            BodyKind::Empty => Ok(Vec::new()),
+            BodyKind::Empty => Ok(()),
         }
+    }
+
+    pub fn content(&self) -> Vec<u8> {
+        self.buffer.clone()
     }
 
     fn read_fixed(
         &mut self,
         connection: &mut Connection,
         content_length: usize,
-    ) -> Result<Vec<u8>, ParserError> {
+    ) -> Result<(), ParserError> {
         if content_length > self.max_body_length {
             return Err(ParserError::new(
                 StatusCode::ContentTooLarge,
@@ -54,12 +58,12 @@ impl Body {
                 .map_err(|_| ParserError::new(StatusCode::BadRequest, "Failed to read body"))?;
             self.buffer.extend(rest);
         }
-
-        Ok(self.buffer.clone())
+        
+        Ok(())
     }
 
     // todo note already read bytes in buffer
-    fn read_chunked(&mut self, connection: &mut Connection) -> Result<Vec<u8>, ParserError> {
+    fn read_chunked(&mut self, connection: &mut Connection) -> Result<(), ParserError> {
         todo!()
     }
 }

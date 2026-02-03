@@ -224,7 +224,7 @@ fn handle_connection(stream: TcpStream, configuration: &Configuration, telemetry
 
     let response = handle_request(&mut connection, configuration, telemetry);
 
-    match connection.write(response) {
+    match connection.write_response(response) {
         Ok(_) => {}
         Err(error) => telemetry.event_error(format!("Connection write failed: {}", error.message)),
     }
@@ -237,7 +237,7 @@ fn handle_request(
 ) -> Response {
     // todo metadata (ip, time)
 
-    let request = match parser::request::parse(connection, &configuration) {
+    let mut request = match parser::request::parse(connection, &configuration) {
         Ok(request) => request,
         Err(error) => return Response::from(error), // todo impl
     };
@@ -252,7 +252,7 @@ fn handle_request(
         Err(error) => return Response::from(error), // todo impl
     };
 
-    let response = match handler::route::handle(&request, &route, &configuration) {
+    let response = match handler::route::handle(&mut request, &route, connection, &configuration) {
         Ok(response) => response,
         Err(error) => return Response::from(error), // todo impl
     };

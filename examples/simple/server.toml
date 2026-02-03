@@ -13,10 +13,16 @@ status_code = 307
 [[routes]]
 
 [routes.path]
+Regex = "/(jublawoma-admin|unclet-admin|oliumbi-admin)"
+
+[routes.action.Proxy]
+location = "localhost:8080"
+
+[[routes]]
+
+[routes.path]
 Prefix = "/"
 
 [routes.action.Fixed]
 root = "./examples/demo/"
 fallback = "./notfound.html"
-
-

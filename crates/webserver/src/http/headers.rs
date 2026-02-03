@@ -36,16 +36,12 @@ impl Headers {
     }
 
     pub fn content_length(&self) -> Option<usize> {
-        match self.values.get("content-length") {
+        match self.values.get("Content-Length") {
             Some(length) => match length.parse::<usize>() {
                 Ok(length) => Some(length),
                 Err(_) => None,
             },
             None => None,
         }
-    }
-
-    pub fn transfer_encoding(&self) -> Option<String> {
-        self.values.get("transfer-encoding").cloned()
     }
 }

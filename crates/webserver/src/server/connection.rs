@@ -1,10 +1,11 @@
+use crate::http::request::Request;
 use crate::http::response::Response;
 use crate::server::server_error::ServerError;
-use std::io::{BufReader, Read, Write};
+use std::io::{BufReader, BufWriter, Read, Write};
 use std::net::{SocketAddr, TcpStream};
 
 pub struct Connection {
-    reader: BufReader<TcpStream>,
+    stream: TcpStream,
     peer: SocketAddr,
 }
 impl Connection {
@@ -14,27 +15,40 @@ impl Connection {
             .map_err(|_| ServerError::new("Failed to get peer address"))?;
 
         Ok(Self {
-            reader: BufReader::new(stream),
+            stream,
             peer,
         })
     }
 
     pub fn read(&mut self, buffer: &mut [u8]) -> Result<usize, ServerError> {
-        self.reader
+        self.stream
             .read(buffer)
             .map_err(|_| ServerError::new("Failed to read connection"))
     }
 
     pub fn read_exact(&mut self, buffer: &mut [u8]) -> Result<(), ServerError> {
-        self.reader
+        self.stream
             .read_exact(buffer)
             .map_err(|_| ServerError::new("Failed to read connection"))
     }
 
-    pub fn write(&mut self, response: Response) -> Result<(), ServerError> {
-        match self.reader.get_mut().write_all(&*response.to_http()) {
-            Ok(_) => Ok(()),
-            Err(_) => Err(ServerError::new("Failed to write response")),
-        }
+    pub fn write_response(&mut self, response: Response) -> Result<(), ServerError> {
+        self.stream
+            .write_all(&*response.to_http())
+            .map_err(|_| ServerError::new("Failed to write response"))?;
+
+        self.stream.flush().map_err(|_| ServerError::new("Failed to write response"))?;
+
+        Ok(())
+    }
+
+    pub fn write_request(&mut self, request: &mut Request) -> Result<(), ServerError> {
+        self.stream
+            .write_all(&*request.to_http())
+            .map_err(|_| ServerError::new("Failed to write request"))?;
+
+        self.stream.flush().map_err(|_| ServerError::new("Failed to write request"))?;
+
+        Ok(())
     }
 }

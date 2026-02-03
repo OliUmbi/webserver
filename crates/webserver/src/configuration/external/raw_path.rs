@@ -3,6 +3,8 @@ use crate::configuration::internal::path::Path;
 use regex::Regex;
 use serde::{Deserialize, Serialize};
 
+// todo method
+
 #[derive(Debug, Deserialize, Serialize)]
 pub enum RawPath {
     Exact(String),

@@ -12,7 +12,7 @@ pub struct Tui {
     tick: Instant,
     pub telemetry: Arc<Telemetry>,
     pub event_history: VecDeque<String>,
-    pub requests_history: Vec<u64>,
+    pub requests_history: VecDeque<u64>,
 }
 
 impl Tui {
@@ -22,18 +22,17 @@ impl Tui {
             tick: Instant::now(),
             telemetry,
             event_history: VecDeque::with_capacity(MAX_EVENT_HISTORY),
-            requests_history: Vec::with_capacity(MAX_REQUESTS_HISTORY),
+            requests_history: VecDeque::with_capacity(MAX_REQUESTS_HISTORY),
         }
     }
 
     pub fn update(&mut self) {
         if self.tick.elapsed() >= Duration::from_secs(1) {
             if self.requests_history.len() >= MAX_REQUESTS_HISTORY {
-                self.requests_history.remove(0);
+                self.requests_history.pop_back();
             }
 
-            self.requests_history
-                .push(self.telemetry.request_take() as u64);
+            self.requests_history.push_front(self.telemetry.request_take() as u64);
 
             self.tick = Instant::now();
         }
