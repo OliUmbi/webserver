@@ -6,7 +6,7 @@
 -[x] plan broad architecture designs
 -[x] multithreading
 -[x] rework body and header parsing in new structure (multiline header)
--[ ] configuration + regex
+-[x] configuration + regex
 -[ ] timeout
 -[x] error handling 
 -[x] logging
@@ -14,7 +14,6 @@
 -[ ] improve testing and benching framework
 -[x] console view of current stats (num requests, top urls, metadata, threads, pressure, etc)
 -[x] reverse proxy
--[ ] testing setup 
 -[ ] rework event log
 -[ ] headless mode
 -[ ] docker 
