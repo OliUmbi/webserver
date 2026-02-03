@@ -7,8 +7,8 @@ threads = 8
 Exact = "/hello"
 
 [routes.action.Redirect]
-to = "index.html"
-code = "TemporaryRedirect"
+location = "index.html"
+status_code = 307
 
 [[routes]]
 
@@ -18,4 +18,5 @@ Prefix = "/"
 [routes.action.Fixed]
 root = "./examples/demo/"
 fallback = "./notfound.html"
+
 

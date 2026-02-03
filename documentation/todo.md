@@ -8,14 +8,16 @@
 -[x] rework body and header parsing in new structure (multiline header)
 -[ ] configuration + regex
 -[ ] timeout
--[ ] error handling 
--[ ] logging
--[ ] hardware / deployment
+-[x] error handling 
+-[x] logging
+-[x] hardware / deployment
 -[ ] improve testing and benching framework
--[ ] console view of current stats (num requests, top urls, metadata, threads, pressure, etc)
+-[x] console view of current stats (num requests, top urls, metadata, threads, pressure, etc)
 -[ ] reverse proxy
--[ ] ssl
 -[ ] testing setup 
+-[ ] rework event log
+-[ ] headless mode
+-[ ] docker 
 
 ## Documentation
 -[x] setup repository

@@ -1,8 +1,6 @@
-use regex::bytes::Regex;
+use regex::Regex;
 use crate::http::request::Request;
 
-pub fn matches(path: &String, request: &Request) -> bool {
-    let regex = Regex::new(path).unwrap();
-
+pub fn matches(regex: &Regex, request: &Request) -> bool {
     regex.is_match(request.request_line.url.raw.as_ref())
 }

@@ -1,4 +1,4 @@
-use crate::configuration::configuration::Configuration;
+use crate::configuration::internal::configuration::Configuration;
 use crate::http::headers::Headers;
 use crate::http::request_line::RequestLine;
 use crate::http::status_code::StatusCode;

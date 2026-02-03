@@ -1,4 +1,3 @@
-use crate::configuration::configuration::Configuration;
 use crate::http::response::Response;
 use crate::server::connection::Connection;
 use crate::server::server_error::ServerError;
@@ -7,6 +6,7 @@ use std::net::{SocketAddr, TcpListener, TcpStream};
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, mpsc};
 use std::thread;
+use crate::configuration::internal::configuration::Configuration;
 use crate::telemetry::telemetry::Telemetry;
 
 pub struct Server {
@@ -66,7 +66,7 @@ impl Server {
     }
 
     fn start_listener(configuration: &Arc<Configuration>) -> Result<TcpListener, ServerError> {
-        TcpListener::bind(SocketAddr::from(([0, 0, 0, 0], configuration.server.port)))
+        TcpListener::bind(SocketAddr::from(([0, 0, 0, 0], configuration.server.port as u16)))
             .map_err(|error| ServerError::new(format!("Failed to bind port: {}, error: {}", configuration.server.port, error)))
     }
 

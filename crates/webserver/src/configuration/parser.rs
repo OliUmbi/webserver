@@ -1,7 +1,7 @@
 use std::fs;
-use crate::configuration::configuration::Configuration;
 use crate::configuration::configuration_error::ConfigurationError;
-use crate::configuration::validate::Validate;
+use crate::configuration::external::raw_configuration::RawConfiguration;
+use crate::configuration::internal::configuration::Configuration;
 
 pub fn parse_configuration(path: &str) -> Result<Configuration, ConfigurationError> {
     let content = match fs::read_to_string(path) {
@@ -9,10 +9,10 @@ pub fn parse_configuration(path: &str) -> Result<Configuration, ConfigurationErr
         Err(_) => return Err(ConfigurationError::new(format!("File not found: {}", path)))
     };
 
-    let configuration = match toml::from_str::<Configuration>(&content) {
+    let raw_configuration = match toml::from_str::<RawConfiguration>(&content) {
         Ok(configuration) => configuration,
-        Err(error) => return Err(ConfigurationError::new(format!("Parse error: {}", error.message())))
+        Err(error) => return Err(ConfigurationError::new(format!("Failed to parse configuration file: {}", error.message())))
     };
-
-    configuration.valid().map(|_| configuration)
+    
+    Configuration::try_from(raw_configuration)
 }

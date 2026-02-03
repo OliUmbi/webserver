@@ -2,6 +2,12 @@ use crate::configuration::parser::parse_configuration;
 use crate::server::server::Server;
 use crate::telemetry::telemetry::Telemetry;
 use std::sync::{mpsc, Arc};
+use crate::configuration::external::raw_action::RawAction;
+use crate::configuration::external::raw_configuration::RawConfiguration;
+use crate::configuration::external::raw_path::RawPath;
+use crate::configuration::external::raw_route::RawRoute;
+use crate::configuration::external::raw_server::RawServer;
+use crate::http::status_code::StatusCode;
 use crate::tui::tui::Tui;
 
 mod http;
@@ -14,25 +20,25 @@ mod tui;
 mod telemetry;
 
 fn main() {
-    //
+
     // let mut routes = Vec::new();
-    // routes.push(Route {
-    //     path: Path::Exact("/hello".to_string()),
-    //     action: Action::Redirect {
-    //         to: "index.html".to_string(),
-    //         code: StatusCode::TemporaryRedirect
+    // routes.push(RawRoute {
+    //     path: RawPath::Exact("/hello".to_string()),
+    //     action: RawAction::Redirect {
+    //         location: "index.html".to_string(),
+    //         status_code: StatusCode::TemporaryRedirect.code() as usize
     //     }
     // });
-    // routes.push(Route {
-    //     path: Path::Prefix("/".to_string()),
-    //     action: Action::Fixed {
-    //         root: PathBuf::from("./examples/demo/"),
-    //         fallback: Some(PathBuf::from("./notfound.html"))
+    // routes.push(RawRoute {
+    //     path: RawPath::Prefix("/".to_string()),
+    //     action: RawAction::Fixed {
+    //         root: "./examples/demo/".to_string(),
+    //         fallback: Some("./notfound.html".to_string())
     //     }
     // });
     //
-    // let conf = Configuration {
-    //     server: configuration::server::Server::default(),
+    // let conf = RawConfiguration {
+    //     server: RawServer::default(),
     //     routes
     // };
     //
@@ -42,8 +48,6 @@ fn main() {
         Ok(configuration) => {configuration}
         Err(error) => panic!("{}", error.message)
     };
-
-    println!("{:?}", configuration);
 
     let configuration = Arc::new(configuration);
 
@@ -58,7 +62,10 @@ fn main() {
 
     let mut tui = Tui::new(telemetry, event_receiver);
 
-    tui::render::render(&mut tui).unwrap();
+    match tui::render::render(&mut tui) {
+        Ok(_) => (),
+        Err(error) => panic!("{}", error.message)
+    };
 
     server.shutdown();
 

@@ -1,4 +1,4 @@
-use crate::configuration::configuration::Configuration;
+use crate::configuration::internal::configuration::Configuration;
 use crate::http::request::Request;
 use crate::http::status_code::StatusCode;
 use crate::parser::parser_error::ParserError;
@@ -6,8 +6,6 @@ use crate::parser::{body, head};
 use crate::server::connection::Connection;
 
 pub fn parse(connection: &mut Connection, configuration: &Configuration) -> Result<Request, ParserError> {
-
-    
     let (head_buffer, body_buffer) = read(connection, configuration)?;
 
     let (request_line, headers) = head::parse(head_buffer, configuration)?;
@@ -37,7 +35,7 @@ fn read(connection: &mut Connection, configuration: &Configuration) -> Result<(V
             return Ok((head_buffer[..head_end].to_vec(), body_buffer.to_vec()));
         }
 
-        if head_buffer.len() > configuration.server.limits.max_header_length {
+        if head_buffer.len() > configuration.server.max_header_length {
             return Err(ParserError::new(StatusCode::RequestHeaderFieldsTooLarge, "Head too long"))
         }
     }
