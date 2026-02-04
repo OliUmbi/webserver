@@ -67,5 +67,22 @@
 09:30 - 10:00, 5.2B34
 
 ### Topics
-- Kompetenzen wählen
-
+- status
+  - configuration rework
+  - implemented exact, prefix and regex routing
+  - implemented fixed, redirect and proxy actions
+  - added tui
+  - reworked error handling into telemetry model
+- goals
+  - regex rewrites
+  - cleanup and validation (todos, eventlog, headless mode)
+  - testing
+  - docker deployment
+  - technical documentation
+  - goal and knowledge documentation
+  - kompetenzen
+    - infrastruktur
+    - software
+- deadlines
+  - submission
+- feedback

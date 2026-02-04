@@ -13,7 +13,7 @@ status_code = 307
 [[routes]]
 
 [routes.path]
-Regex = "/(jublawoma-admin|unclet-admin|oliumbi-admin)"
+Regex = "/(jublawoma|jublawoma-admin|unclet-admin|oliumbi-admin)"
 
 [routes.action.Proxy]
 location = "localhost:8080"
