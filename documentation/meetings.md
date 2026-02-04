@@ -86,3 +86,5 @@
 - deadlines
   - submission
 - feedback
+  - reverse proxy redirect
+  - http spec dos and donts

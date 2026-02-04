@@ -1,7 +1,6 @@
 use crate::http::body::Body;
 use crate::http::headers::Headers;
 use crate::http::request_line::RequestLine;
-use crate::parser::parser_error::ParserError;
 
 pub struct Request {
     pub request_line: RequestLine,
@@ -18,7 +17,6 @@ impl Request {
         }
     }
 
-    // todo review
     pub fn to_http(&self) -> Vec<u8> {
         let mut message = Vec::new();
         message.extend_from_slice(self.request_line.to_http().as_bytes());

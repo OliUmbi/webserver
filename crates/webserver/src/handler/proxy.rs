@@ -1,4 +1,3 @@
-use std::fmt::format;
 use crate::configuration::internal::configuration::Configuration;
 use crate::handler::handler_error::HandlerError;
 use crate::http::request::Request;
@@ -16,13 +15,13 @@ pub fn handle(
 ) -> Result<Response, HandlerError> {
     let upstream = TcpStream::connect(location).map_err(|_| HandlerError::new(StatusCode::ServiceUnavailable, "Failed to connect to upstream service"))?;
 
-    let mut upstream_connection = Connection::new(upstream).map_err(|_| HandlerError::new(StatusCode::ServiceUnavailable, "Failed to connect to upstream service"))?;
+    let mut upstream_connection = Connection::new(upstream, configuration.server.timeout).map_err(|_| HandlerError::new(StatusCode::ServiceUnavailable, "Failed to connect to upstream service"))?;
 
     request.body.read(connection).map_err(|error| HandlerError::new(error.status, error.message))?;
 
     upstream_connection.write_request(request).map_err(|_| HandlerError::new(StatusCode::ServiceUnavailable, "Failed to forward to upstream service"))?;
 
-    let upstream_response = parser::response::parse(&mut upstream_connection, &configuration).map_err(|_| HandlerError::new(StatusCode::BadGateway, "Server sent invalid response"))?;
+    let upstream_response = parser::response::parse(&mut upstream_connection, &configuration).map_err(|_| HandlerError::new(StatusCode::BadGateway, "Upstream service sent invalid response"))?;
     
     Ok(upstream_response)
 }

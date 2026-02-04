@@ -1,4 +1,5 @@
 use crate::configuration::internal::configuration::Configuration;
+use crate::telemetry::telemetry::TelemetryEvent;
 use crate::tui::tui::Tui;
 use crate::tui::tui_error::TuiError;
 use crossterm::event::{poll, Event, KeyCode};
@@ -135,7 +136,15 @@ fn render_events(frame: &mut Frame, area: Rect, tui: &Tui) {
     let items: Vec<ListItem> = tui
         .event_history
         .iter()
-        .map(|event| ListItem::new(event.as_str()))
+        .map(|event| {
+            let style = match event {
+                TelemetryEvent::Request { .. } => Style::default().fg(Color::Blue),
+                TelemetryEvent::Info { .. } => Style::default().fg(Color::Yellow),
+                TelemetryEvent::Error { .. } => Style::default().fg(Color::Red),
+            };
+
+            ListItem::new(event.to_string()).style(style)
+        })
         .collect();
 
     let events = List::new(items).block(block).direction(BottomToTop);

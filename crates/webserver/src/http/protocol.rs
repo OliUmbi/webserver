@@ -4,10 +4,10 @@ pub enum Protocol {
 }
 
 impl Protocol {
-    pub fn from_str(s: &str) -> Option<Protocol> {
+    pub fn from_str(s: &str) -> Result<Self, ()> {
         match s.to_uppercase().as_str() {
-            "HTTP/1.1" => Some(Protocol::Http1_1),
-            _ => None,
+            "HTTP/1.1" => Ok(Protocol::Http1_1),
+            _ => Err(()),
         }
     }
 

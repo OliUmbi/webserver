@@ -5,7 +5,6 @@ pub mod method;
 pub mod protocol;
 pub mod request;
 pub mod request_line;
-pub mod request_meta;
 pub mod response;
 pub mod response_line;
 pub mod status_code;

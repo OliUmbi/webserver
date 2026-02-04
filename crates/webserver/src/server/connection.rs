@@ -1,19 +1,26 @@
 use crate::http::request::Request;
 use crate::http::response::Response;
 use crate::server::server_error::ServerError;
-use std::io::{BufReader, BufWriter, Read, Write};
+use std::io::{Read, Write};
 use std::net::{SocketAddr, TcpStream};
+use std::time::Duration;
 
 pub struct Connection {
     stream: TcpStream,
     peer: SocketAddr,
 }
 impl Connection {
-    pub fn new(stream: TcpStream) -> Result<Self, ServerError> {
+    pub fn new(stream: TcpStream, timeout: Duration) -> Result<Self, ServerError> {
+        stream.set_read_timeout(Some(timeout))
+            .map_err(|_| ServerError::new("Failed to set timeout"))?;
+        
+        stream.set_write_timeout(Some(timeout))
+            .map_err(|_| ServerError::new("Failed to set timeout"))?;
+        
         let peer = stream
             .peer_addr()
             .map_err(|_| ServerError::new("Failed to get peer address"))?;
-
+        
         Ok(Self {
             stream,
             peer,

@@ -14,11 +14,11 @@ pub fn handle(
     configuration: &Configuration,
 ) -> Result<Response, HandlerError> {
     match &route.action {
-        Action::Fixed { root, fallback } => fixed::handle(root, fallback, request, configuration),
+        Action::Fixed { root, fallback } => fixed::handle(root, fallback, request),
         Action::Proxy { location } => proxy::handle(location, request, connection, configuration),
         Action::Redirect {
             location,
             status_code,
-        } => redirect::handle(location, status_code, request, configuration),
+        } => redirect::handle(location, status_code),
     }
 }

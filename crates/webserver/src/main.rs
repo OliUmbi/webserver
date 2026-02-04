@@ -2,6 +2,7 @@ use crate::configuration::parser::parse_configuration;
 use crate::server::server::Server;
 use crate::telemetry::telemetry::Telemetry;
 use crate::tui::tui::Tui;
+use std::env;
 use std::sync::{mpsc, Arc};
 
 mod configuration;
@@ -14,7 +15,12 @@ mod telemetry;
 mod tui;
 
 fn main() {
-    let configuration = match parse_configuration("./examples/simple/server.toml") {
+    let configuration_path = match env::var("CONFIGURATION_PATH") {
+        Ok(configuration_path) => configuration_path,
+        Err(_) => panic!("Missing environment variable: CONFIGURATION_PATH"),
+    };
+
+    let configuration = match parse_configuration(configuration_path) {
         Ok(configuration) => configuration,
         Err(error) => panic!("{}", error.message),
     };
@@ -30,12 +36,18 @@ fn main() {
         Err(error) => panic!("{}", error.message),
     };
 
-    let mut tui = Tui::new(telemetry, event_receiver);
+    if configuration.headless {
+        while let Ok(event) = event_receiver.recv() {
+            println!("{}", event.to_string());
+        }
+    } else {
+        let mut tui = Tui::new(telemetry, event_receiver);
 
-    match tui::render::render(&mut tui, &configuration) {
-        Ok(_) => (),
-        Err(error) => panic!("{}", error.message),
-    };
+        match tui::render::render(&mut tui, &configuration) {
+            Ok(_) => (),
+            Err(error) => panic!("{}", error.message),
+        };
+    }
 
     server.shutdown();
 }

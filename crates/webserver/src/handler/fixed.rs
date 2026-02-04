@@ -1,4 +1,3 @@
-use crate::configuration::internal::configuration::Configuration;
 use crate::handler::handler_error::HandlerError;
 use crate::http::headers::Headers;
 use crate::http::media_type::{MediaType, TopLevelMediaType};
@@ -7,14 +6,11 @@ use crate::http::response::Response;
 use crate::http::status_code::StatusCode;
 use std::fs;
 use std::path::{Path, PathBuf};
-use std::thread::sleep;
-use std::time::Duration;
 
 pub fn handle(
     root: &PathBuf,
     fallback: &Option<PathBuf>,
     request: &Request,
-    configuration: &Configuration,
 ) -> Result<Response, HandlerError> {
     let mut path = Path::new(root).join(request.request_line.url.relative());
 
@@ -24,9 +20,6 @@ pub fn handle(
             "Location not valid",
         ));
     }
-
-    // todo remove
-    sleep(Duration::from_millis(50));
 
     let file = match fs::read_to_string(&path) {
         Ok(file) => file,

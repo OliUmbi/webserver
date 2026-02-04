@@ -2,7 +2,6 @@ use std::error::Error;
 use std::fmt;
 use std::fmt::{Display, Formatter};
 
-// todo rethink splitting request errors
 #[derive(Debug)]
 pub struct ServerError {
     pub message: String,

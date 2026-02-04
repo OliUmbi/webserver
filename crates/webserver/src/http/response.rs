@@ -3,7 +3,6 @@ use crate::http::protocol::Protocol;
 use crate::http::response_line::ResponseLine;
 use crate::http::status_code::StatusCode;
 
-// todo metadata (ip, time)
 pub struct Response {
     response_line: ResponseLine,
     headers: Headers,
@@ -19,9 +18,6 @@ impl Response {
         }
     }
 
-    // todo implement a content-length system that works for multiple use cases
-
-    // todo rework
     pub fn error(status: StatusCode, message: String) -> Self {
         let body = format!("Error: {}", message);
 
@@ -36,7 +32,6 @@ impl Response {
         }
     }
 
-    // todo review
     pub fn to_http(&self) -> Vec<u8> {
         let mut message = Vec::new();
         message.extend_from_slice(self.response_line.to_http().as_bytes());

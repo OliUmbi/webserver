@@ -113,12 +113,11 @@ impl Server {
                 let stream = match stream {
                     Ok(stream) => stream,
                     Err(_) => {
-                        telemetry.event_error("Stream connection failed");
+                        telemetry.event_error("Stream connection failed", None);
                         continue;
                     }
                 };
 
-                // todo review
                 telemetry.connection_start();
 
                 if dispatch_sender.send(stream).is_err() {
@@ -212,10 +211,10 @@ impl Server {
 }
 
 fn handle_connection(stream: TcpStream, configuration: &Configuration, telemetry: &Telemetry) {
-    let mut connection = match Connection::new(stream) {
+    let mut connection = match Connection::new(stream, configuration.server.timeout) {
         Ok(connection) => connection,
         Err(error) => {
-            telemetry.event_error(format!("Connection construction failed: {}", error.message));
+            telemetry.event_error(format!("Connection construction failed: {}", error.message), None);
             return;
         }
     };
@@ -226,7 +225,7 @@ fn handle_connection(stream: TcpStream, configuration: &Configuration, telemetry
 
     match connection.write_response(response) {
         Ok(_) => {}
-        Err(error) => telemetry.event_error(format!("Connection write failed: {}", error.message)),
+        Err(error) => telemetry.event_error(format!("Connection write failed: {}", error.message), None),
     }
 }
 
@@ -235,11 +234,12 @@ fn handle_request(
     configuration: &Configuration,
     telemetry: &Telemetry,
 ) -> Response {
-    // todo metadata (ip, time)
-
     let mut request = match parser::request::parse(connection, &configuration) {
         Ok(request) => request,
-        Err(error) => return Response::from(error), // todo impl
+        Err(error) => {
+            telemetry.event_error(&error.message, Some(error.status));
+            return Response::from(error)
+        },
     };
 
     telemetry.event_request(
@@ -249,12 +249,18 @@ fn handle_request(
 
     let route = match routing::router::resolve(&request, &configuration) {
         Ok(route) => route,
-        Err(error) => return Response::from(error), // todo impl
+        Err(error) => {
+            telemetry.event_error(&error.message, Some(error.status));
+            return Response::from(error)
+        },
     };
 
     let response = match handler::route::handle(&mut request, &route, connection, &configuration) {
         Ok(response) => response,
-        Err(error) => return Response::from(error), // todo impl
+        Err(error) => {
+            telemetry.event_error(&error.message, Some(error.status));
+            return Response::from(error)
+        },
     };
 
     response

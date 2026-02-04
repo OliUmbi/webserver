@@ -13,7 +13,7 @@ pub fn parse(raw_request_line: String) -> Result<RequestLine, ParserError> {
         .ok_or_else(|| ParserError::new(StatusCode::BadGateway, "Method missing"))?;
 
     let method = Method::from_str(raw_method)
-        .ok_or_else(|| ParserError::new(StatusCode::BadGateway, "Invalid method"))?;
+        .map_err(|_| ParserError::new(StatusCode::BadGateway, "Invalid method"))?;
 
     let raw_url = components
         .next()
@@ -26,7 +26,7 @@ pub fn parse(raw_request_line: String) -> Result<RequestLine, ParserError> {
         .ok_or_else(|| ParserError::new(StatusCode::BadGateway, "Protocol missing"))?;
 
     let protocol = Protocol::from_str(raw_protocol)
-        .ok_or_else(|| ParserError::new(StatusCode::BadGateway, "Invalid protocol"))?;
+        .map_err(|_| ParserError::new(StatusCode::BadGateway, "Invalid protocol"))?;
 
     Ok(RequestLine::new(method, url, protocol))
 }

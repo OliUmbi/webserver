@@ -1,5 +1,8 @@
+use crate::http::status_code::StatusCode;
+use chrono::{DateTime, SecondsFormat, Utc};
 use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::mpsc;
+
 #[derive(Debug)]
 pub struct Telemetry {
     workers: AtomicUsize,
@@ -10,9 +13,20 @@ pub struct Telemetry {
 
 #[derive(Debug)]
 pub enum TelemetryEvent {
-    Request { method: String, url: String },
-    Info { message: String },
-    Error { message: String },
+    Request {
+        time: DateTime<Utc>,
+        method: String,
+        url: String,
+    },
+    Info {
+        time: DateTime<Utc>,
+        message: String,
+    },
+    Error {
+        time: DateTime<Utc>,
+        message: String,
+        status_code: Option<u16>,
+    },
 }
 
 impl Telemetry {
@@ -57,9 +71,9 @@ impl Telemetry {
         self.requests.swap(1, Ordering::Relaxed)
     }
 
-    // todo handle error maybe
     pub fn event_request(&self, method: impl Into<String>, url: impl Into<String>) {
         let _ = self.event_sender.send(TelemetryEvent::Request {
+            time: Utc::now(),
             method: method.into(),
             url: url.into(),
         });
@@ -67,13 +81,35 @@ impl Telemetry {
 
     pub fn event_info(&self, message: impl Into<String>) {
         let _ = self.event_sender.send(TelemetryEvent::Info {
+            time: Utc::now(),
             message: message.into(),
         });
     }
 
-    pub fn event_error(&self, message: impl Into<String>) {
+    pub fn event_error(&self, message: impl Into<String>, status_code: Option<StatusCode>) {
         let _ = self.event_sender.send(TelemetryEvent::Error {
+            time: Utc::now(),
             message: message.into(),
+            status_code: status_code.map(|status_code| status_code.code()),
         });
+    }
+}
+
+impl TelemetryEvent {
+    pub fn to_string(&self) -> String {
+        match self {
+            TelemetryEvent::Request { time, method, url } => format!("{} [REQUEST] {} {}", time.to_rfc3339_opts(SecondsFormat::Secs, true), method, url),
+            TelemetryEvent::Info { time, message } => format!("{} [INFO   ] {}", time.to_rfc3339_opts(SecondsFormat::Secs, true), message),
+            TelemetryEvent::Error {
+                time,
+                message,
+                status_code,
+            } => format!(
+                "{} [ERROR  ] {}{}",
+                time.to_rfc3339_opts(SecondsFormat::Secs, true),
+                status_code.map_or_else(|| String::new(), |status_code| format!("{} ", status_code)),
+                message,
+            ),
+        }
     }
 }

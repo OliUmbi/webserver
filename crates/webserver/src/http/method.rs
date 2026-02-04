@@ -24,18 +24,17 @@ impl Method {
         }
     }
 
-    // todo maybe change to Result
-    pub fn from_str(s: &str) -> Option<Self> {
+    pub fn from_str(s: &str) -> Result<Self, ()> {
         match s.to_uppercase().as_str() {
-            "GET" => Some(Method::Get),
-            "HEAD" => Some(Method::Head),
-            "POST" => Some(Method::Post),
-            "PUT" => Some(Method::Put),
-            "DELETE" => Some(Method::Delete),
-            "CONNECT" => Some(Method::Connect),
-            "OPTIONS" => Some(Method::Options),
-            "TRACE" => Some(Method::Trace),
-            _ => None,
+            "GET" => Ok(Method::Get),
+            "HEAD" => Ok(Method::Head),
+            "POST" => Ok(Method::Post),
+            "PUT" => Ok(Method::Put),
+            "DELETE" => Ok(Method::Delete),
+            "CONNECT" => Ok(Method::Connect),
+            "OPTIONS" => Ok(Method::Options),
+            "TRACE" => Ok(Method::Trace),
+            _ => Err(()),
         }
     }
 }

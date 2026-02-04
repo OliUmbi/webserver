@@ -6,6 +6,8 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct RawConfiguration {
+    pub headless: Option<bool>,
+
     #[serde(default)]
     pub server: RawServer,
 
@@ -18,6 +20,7 @@ impl TryFrom<RawConfiguration> for Configuration {
 
     fn try_from(raw: RawConfiguration) -> Result<Self, Self::Error> {
         Ok(Self {
+            headless: raw.headless.unwrap_or(true),
             server: raw.server.try_into()?,
             routes: raw
                 .routes

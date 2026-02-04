@@ -1,19 +1,16 @@
 # Architecture
 
-## Crates
+## webserver
 
-### webserver
+### server
+### tui
+### parser
+### routing
+### handler
+### http
+### configuration
+### telemetry
+### tui
 
-Webserver implementation handling HTTP 1.1 requests.
+## limitations
 
-### shared
-
-Shared enums and structs representing http 1.1 specification.
-
-### integration (planned)
-
-Test suite to check HTTP 1.1 specification compliance. 
-
-### bench (planned)
-
-Bench to simulate load and check performance progress.

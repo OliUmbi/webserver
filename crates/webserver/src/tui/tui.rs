@@ -11,7 +11,7 @@ pub struct Tui {
     event_receiver: mpsc::Receiver<TelemetryEvent>,
     tick: Instant,
     pub telemetry: Arc<Telemetry>,
-    pub event_history: VecDeque<String>,
+    pub event_history: VecDeque<TelemetryEvent>,
     pub requests_history: VecDeque<u64>,
 }
 
@@ -42,7 +42,7 @@ impl Tui {
                 self.event_history.pop_back();
             }
 
-            self.event_history.push_front(format!("{:?}", event));
+            self.event_history.push_front(event);
         }
     }
 }

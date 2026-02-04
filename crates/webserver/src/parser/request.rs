@@ -1,6 +1,5 @@
 use crate::configuration::internal::configuration::Configuration;
 use crate::http::request::Request;
-use crate::http::status_code::StatusCode;
 use crate::parser::parser_error::ParserError;
 use crate::parser::{body, head, headers, message, request_line};
 use crate::server::connection::Connection;

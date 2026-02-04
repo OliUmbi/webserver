@@ -29,10 +29,6 @@ impl MediaType {
 
         media_type
     }
-
-    pub fn from_str(raw: &str) -> Option<Self> {
-        todo!()
-    }
 }
 
 #[derive(Debug)]

@@ -1,4 +1,3 @@
-// todo rework
 #[derive(Debug)]
 pub struct Url {
     pub raw: String,

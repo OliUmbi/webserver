@@ -1,5 +1,8 @@
+headless = true
+
 [server]
 threads = 8
+timeout = 1
 
 [[routes]]
 
