@@ -1,4 +1,4 @@
-headless = true
+headless = false
 
 [server]
 threads = 8

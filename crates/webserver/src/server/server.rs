@@ -3,11 +3,12 @@ use crate::http::response::Response;
 use crate::server::connection::Connection;
 use crate::server::server_error::ServerError;
 use crate::telemetry::telemetry::Telemetry;
-use crate::{handler, parser, routing};
+use crate::{handler, parser, routing, validation};
 use std::net::{SocketAddr, TcpListener, TcpStream};
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{mpsc, Arc};
 use std::thread;
+use crate::validation::validation_error::ValidationError;
 
 pub struct Server {
     running: Arc<AtomicBool>,
@@ -246,6 +247,14 @@ fn handle_request(
         request.request_line.method.as_str(),
         &request.request_line.url.raw,
     );
+
+    match validation::request::validate(&request) {
+        Ok(_) => {},
+        Err(error) => {
+            telemetry.event_error(&error.message, Some(error.status));
+            return Response::from(error)
+        },
+    }
 
     let route = match routing::router::resolve(&request, &configuration) {
         Ok(route) => route,

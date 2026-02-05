@@ -40,4 +40,8 @@ impl Headers {
             None => None,
         }
     }
+    
+    pub fn host(&self) -> Option<&String> {
+        self.values.get("Host")
+    }
 }

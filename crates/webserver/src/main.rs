@@ -13,6 +13,7 @@ mod routing;
 mod server;
 mod telemetry;
 mod tui;
+mod validation;
 
 fn main() {
     let configuration_path = match env::var("CONFIGURATION_PATH") {

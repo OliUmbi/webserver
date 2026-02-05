@@ -6,6 +6,8 @@ use crate::http::response::Response;
 use crate::http::status_code::StatusCode;
 use std::fs;
 use std::path::{Path, PathBuf};
+use std::thread::sleep;
+use std::time::Duration;
 
 pub fn handle(
     root: &PathBuf,
@@ -20,6 +22,8 @@ pub fn handle(
             "Location not valid",
         ));
     }
+
+    sleep(Duration::from_millis(50));
 
     let file = match fs::read_to_string(&path) {
         Ok(file) => file,
