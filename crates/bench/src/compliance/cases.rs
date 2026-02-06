@@ -1,0 +1,111 @@
+use crate::compliance::case::Case;
+
+// pub const CASES: &[Case] = &[
+//     Case {
+//         name: "fragmented_method",
+//         req: RawRequest { method: "G", path: "/", version: "HTTP/1.1", headers: &["Host: test"], body: "" },
+//         expected_status: (0, 0), // simulated timeout
+//         expected_timeout: true,
+//         expected_body: None,
+//     },
+//     Case {
+//         name: "fragmented_url",
+//         req: RawRequest { method: "GET", path: "/hello", version: "HTTP/1.1", headers: &["Host: test"], body: "" },
+//         expected_status: (0, 0),
+//         expected_timeout: true,
+//         expected_body: None,
+//     },
+//     Case {
+//         name: "missing_host_header",
+//         req: RawRequest { method: "GET", path: "/", version: "HTTP/1.1", headers: &[], body: "" },
+//         expected_status: (400, 499),
+//         expected_timeout: false,
+//         expected_body: None,
+//     },
+//     Case {
+//         name: "invalid_http_version",
+//         req: RawRequest { method: "GET", path: "/", version: "HTTP/1.0", headers: &["Host: test"], body: "" },
+//         expected_status: (400, 499),
+//         expected_timeout: false,
+//         expected_body: None,
+//     },
+//     Case {
+//         name: "valid_get",
+//         req: RawRequest { method: "GET", path: "/", version: "HTTP/1.1", headers: &["Host: example.com"], body: "" },
+//         expected_status: (200, 299),
+//         expected_timeout: false,
+//         expected_body: None,
+//     },
+//     Case {
+//         name: "expect_header",
+//         req: RawRequest { method: "GET", path: "/", version: "HTTP/1.1", headers: &["Host: example.com", "Expect: 100-continue"], body: "" },
+//         expected_status:  (200, 299),
+//         expected_timeout: false,
+//         expected_body: None,
+//     },
+//     Case {
+//         name: "chunked_post",
+//         req: RawRequest {
+//             method: "POST",
+//             path: "/",
+//             version: "HTTP/1.1",
+//             headers: &["Host: example.com", "Transfer-Encoding: chunked"],
+//             body: "c\r\nHellO world1\r\n0\r\n\r\n",
+//         },
+//         expected_status: (200, 299),
+//         expected_timeout: false,
+//         expected_body: Some("HellO world1"),
+//     },
+//     Case {
+//         name: "conflicting_transfer_and_content_length",
+//         req: RawRequest {
+//             method: "POST",
+//             path: "/",
+//             version: "HTTP/1.1",
+//             headers: &["Host: example.com", "Content-Length: 5", "Transfer-Encoding: chunked"],
+//             body: "c\r\nHellO world1\r\n0\r\n\r\n",
+//         },
+//         expected_status: (400, 499),
+//         expected_timeout: false,
+//         expected_body: Some("HellO world1"),
+//     },
+//     Case {
+//         name: "invalid_header_char",
+//         req: RawRequest {
+//             method: "GET",
+//             path: "/",
+//             version: "HTTP/1.1",
+//             headers: &["Host: example.com", "X-Bad-Control-Char: test\x07"],
+//             body: "",
+//         },
+//         expected_status: (400, 499),
+//         expected_timeout: false,
+//         expected_body: None,
+//     },
+//     Case {
+//         name: "negative_content_length",
+//         req: RawRequest {
+//             method: "GET",
+//             path: "/",
+//             version: "HTTP/1.1",
+//             headers: &["Host: example.com", "Content-Length: -1234"],
+//             body: "",
+//         },
+//         expected_status: (400, 499),
+//         expected_timeout: false,
+//         expected_body: None,
+//     },
+//     Case {
+//         name: "multiple_host_headers",
+//         req: RawRequest {
+//             method: "GET",
+//             path: "/",
+//             version: "HTTP/1.1",
+//             headers: &["Host: example.com", "Host: example.org"],
+//             body: "",
+//         },
+//         expected_status: (400, 499),
+//         expected_timeout: false,
+//         expected_body: None,
+//     },
+// ];

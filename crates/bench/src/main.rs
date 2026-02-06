@@ -1,14 +1,21 @@
+use crate::bench::Bench;
+use crate::stress::stress::Stress;
+use crate::test::test::{Test};
+
 mod compliance;
 mod stress;
-mod util;
+mod test;
+mod bench;
+mod http;
 
-fn main() -> anyhow::Result<()> {
+fn main() {
 
-    let base_url = "localhost:80";
+    let mut tests: Vec<Box<dyn Test>> = Vec::new();
+    tests.push(Box::new(Stress::new()));
+    tests.push(Box::new(Stress::new()));
+    tests.push(Box::new(Stress::new()));
+    tests.push(Box::new(Stress::new()));
 
-    compliance::run(&base_url);
-
-    stress::run(&base_url)?;
-
-    Ok(())
+    let mut bench = Bench::new(tests);
+    bench.start();
 }
