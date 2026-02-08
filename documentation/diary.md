@@ -9,7 +9,7 @@
 ## 13.01. Tuesday
 
 - implement prototype
-  - simple static get request serving HTML file
+    - simple static get request serving HTML file
 - define project structure
 - plan next week and scope
 
@@ -71,7 +71,7 @@
 
 ## 29.01. Thursday
 
-- reworked parsing for new infrastructure and 
+- reworked parsing for new infrastructure and
 - changed connection handling to control structure
 - implemented framework for routing and action handling
 
@@ -95,7 +95,22 @@
 ## 04.02. Wednesday
 
 - coach meeting
+- headless mode
+- reworked event log
+- timeout handling
+- todo cleanup
 
 ## 05.02. Thursday
 
+- simple bench setup for stress tests and http specification compliance
+
 ## 06.02. Friday
+
+- refined bench implementation
+- tui setup for configuration and execution
+- reworked stress test implementation
+- updated documentation
+
+## 09.02. Monday
+
+- coach meeting

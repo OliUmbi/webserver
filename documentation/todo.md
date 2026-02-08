@@ -28,10 +28,11 @@
 -[ ] kompetenzen wählen und abdecken
 -[ ] rework specification goal
 -[ ] define knowledge goals
--[ ] define roadmap
+-[ ] define roadmap / objectives
 -[ ] note learned http 1.1 specs in knowledge
 -[ ] detailed sprint docs with goals and achieved
 -[ ] review https://github.com/uNetworking/h1spec
 -[ ] review coverage check https://pypi.org/project/httplint/
-
+-[ ] define http 1.1 spec compliance / feature coverage
+-[ ] limitations and scope 
 

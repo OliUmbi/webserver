@@ -20,14 +20,43 @@ Application should run as Linux service serving HTML files from filesystem using
 
 ## Goal
 
-- HTTP 1.1 specification compliant (mostly)
-- extensive test suite
-- deployment setups (Linux service, Docker)
-- file based configuration
-- file based routing
-- ssl
-- terminal dashboard view of load, requests, open connections, etc.
-- (reverse proxy)
-- (caching)
-- (load balancing)
-- (tui webserver bench and comparisons)
+Implement a simple standalone http 1.1 webserver inspired by nginx.
+Main objectives:
+
+- Basic HTTP 1.1 Specification compliant
+- Directory serving
+- Reverse proxy
+- File based configuration
+- Docker deployment
+- Terminal user interface to visualize load
+
+To make it more challenging, the implementation is in Rust (which I'm not familiar). 
+Additionally usage of external libraries should be kept to a minimum.
+Correctness and performance are a secondary priority that is demonstrated by a small bench suite. 
+
+### Week 1
+
+- Project setup
+- Simple static implementation
+- Familiarize with HTTP 1.1 specification
+
+### Week 2
+
+- Request parsing
+- Directory file serving
+- Simple configuration
+
+### Week 3
+
+- Multithreading
+- Error handling
+- Deployment
+- Service interaction and better observability
+
+### Week 4
+
+- Full routing and action handling
+- Reverse proxy
+- Terminal user interface for observability
+- Bench suite
+- Docker setup

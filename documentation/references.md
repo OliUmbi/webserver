@@ -8,3 +8,7 @@
 - [IANA media types](https://www.iana.org/assignments/media-types/media-types.xhtml)
 - [IANA top level media types](https://www.iana.org/assignments/top-level-media-types/top-level-media-types.xhtml)
 - [Simple http test](https://github.com/uNetworking/h1spec/blob/main/http_test.ts)
+
+## AI
+
+
