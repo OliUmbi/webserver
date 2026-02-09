@@ -13,7 +13,7 @@ pub fn read(
         let mut temp_buffer = [0u8; 512];
         let read_bytes = connection
             .read(&mut temp_buffer)
-            .map_err(|_| ParserError::new(StatusCode::BadRequest, "Failed to read BufReader"))?;
+            .map_err(|_| ParserError::new(StatusCode::BadRequest, "Failed to read message"))?;
 
         if read_bytes == 0 {
             break;

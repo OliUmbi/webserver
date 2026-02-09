@@ -6,6 +6,13 @@ pub struct Configuration {
 }
 
 impl Configuration {
+    pub fn new(address: String, custom: HashMap<String, String>) -> Self {
+        Self {
+            address,
+            custom
+        }
+    }
+    
     pub fn address(&self) -> String {
         self.address.clone()
     }

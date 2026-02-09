@@ -1,4 +1,5 @@
-use crate::test::log::{Log, LogType};
+use std::arch::x86_64::_mm256_bitshuffle_epi64_mask;
+use crate::test::log::{Log, LogType, Logger};
 use crate::test::test::Test;
 use crossterm::event::{poll, Event, KeyCode, KeyEventKind};
 use crossterm::terminal::{
@@ -9,47 +10,52 @@ use ratatui::backend::CrosstermBackend;
 use ratatui::layout::{Constraint, Direction, Layout, Rect};
 use ratatui::prelude::{Color, Style, Text};
 use ratatui::text::Line;
-use ratatui::widgets::{Block, Borders, List, StatefulWidget, ListItem, ListState, Paragraph, ListDirection};
+use ratatui::widgets::{Block, Borders, List, ListDirection, ListItem, Paragraph, StatefulWidget};
 use ratatui::{Frame, Terminal};
-use std::io;
+use std::cmp::PartialEq;
+use std::collections::HashMap;
+use std::{io, thread};
 use std::io::Stdout;
+use std::sync::{mpsc, Arc};
 use std::time::Duration;
+use log::log;
+use crate::test::configuration::Configuration;
 
 const TICK_RATE: Duration = Duration::from_millis(200);
 
 pub struct Bench {
-    tests: Vec<Box<dyn Test>>,
+    tests: Vec<Arc<dyn Test>>,
     running: bool,
-    selected: usize,
+    logger: Arc<Logger>,
+    log_receiver: mpsc::Receiver<Log>,
+    view: View,
+    selected_test: usize,
     logs: Vec<Log>,
 }
 
+#[derive(PartialEq)]
+enum View {
+    Selection,
+    Configuration,
+    Running,
+}
+
 impl Bench {
-    pub fn new(tests: Vec<Box<dyn Test>>) -> Self {
+    pub fn new(tests: Vec<Arc<dyn Test>>) -> Self {
+        if tests.is_empty() {
+            panic!("No tests specified")
+        }
+
+        let (log_sender, log_receiver) = mpsc::channel();
+
         Self {
             tests,
             running: true,
-            selected: 0,
-            logs: vec![
-                Log::new(LogType::Success, "Yeet"),
-                Log::new(LogType::Failed, "Yeet"),
-                Log::new(LogType::Success, "Yeet"),
-                Log::new(LogType::Failed, "Yeet"),
-                Log::new(LogType::Success, "Yeet"),
-                Log::new(LogType::Failed, "Yeet"),
-                Log::new(LogType::Success, "Yeet"),
-                Log::new(LogType::Failed, "Yeet"),
-                Log::new(LogType::Success, "Yeet"),
-                Log::new(LogType::Failed, "Yeet"),
-                Log::new(LogType::Success, "Yeet"),
-                Log::new(LogType::Failed, "Yeet"),
-                Log::new(LogType::Success, "Yeet"),
-                Log::new(LogType::Failed, "Yeet"),
-                Log::new(LogType::Success, "Yeet"),
-                Log::new(LogType::Failed, "Yeet"),
-                Log::new_details(LogType::Information, "Yeet", vec!["Yeet", "yeet", "yeet"]),
-                Log::new_details(LogType::Failed, "Yeet", vec!["Yeet", "yeet", "yeet"])
-            ]
+            logger: Arc::new(Logger::new(log_sender)),
+            log_receiver,
+            view: View::Selection,
+            selected_test: 0,
+            logs: Vec::new()
         }
     }
 
@@ -73,42 +79,80 @@ impl Bench {
                 if key.code == KeyCode::Char('q') {
                     self.running = false
                 }
-                if key.code == KeyCode::Up && self.selected != 0 {
-                    self.selected -= 1;
+                if key.code == KeyCode::Up {
+                    if self.view == View::Selection && self.selected_test != 0 {
+                        self.selected_test -= 1;
+                    }
                 }
-                if key.code == KeyCode::Down && self.selected != self.tests.len() - 1 {
-                    self.selected += 1;
+                if key.code == KeyCode::Down {
+                    if self.view == View::Selection && self.selected_test != self.tests.len() - 1 {
+                        self.selected_test += 1;
+                    }
+                }
+                if key.code == KeyCode::Enter {
+                    match self.view {
+                        View::Selection => self.view = View::Configuration,
+                        View::Configuration => self.view = View::Running,
+                        _ => (),
+                    }
+                }
+                if key.code == KeyCode::Esc {
+                    match self.view {
+                        View::Configuration => self.view = View::Selection,
+                        View::Running => self.view = View::Configuration,
+                        _ => {}
+                    }
+                }
+                if key.code == KeyCode::Home {
+                    self.start_test()
                 }
             }
         }
     }
 
-    fn render(&self, frame: &mut Frame) {
-        let [area_head, area_body, area_foot] = Layout::default()
+    fn start_test(&self) {
+        let test = self.tests.get(self.selected_test).unwrap();
+
+        let mut custom = HashMap::new();
+        custom.insert("connections".to_string(), "3".to_string());
+        custom.insert("requests".to_string(), "10".to_string());
+
+        let configuration = Configuration::new("127.0.0.1:80".to_string(), custom);
+
+        let test = test.clone();
+        let logger = self.logger.clone();
+
+        thread::spawn(move || {
+            test.run(configuration, logger)
+        });
+    }
+
+
+    fn render(&mut self, frame: &mut Frame) {
+        let [area_body, area_foot] = Layout::default()
             .direction(Direction::Vertical)
-            .constraints(
-                [
-                    Constraint::Length(3),
-                    Constraint::Min(0),
-                    Constraint::Length(3),
-                ]
-                    .as_ref(),
-            )
+            .constraints([Constraint::Min(0), Constraint::Length(3)].as_ref())
             .areas(frame.area());
 
-        let [area_tests, area_logs] = Layout::default()
+        let [area_selection, area_configuration, area_running] = Layout::default()
             .direction(Direction::Horizontal)
-            .constraints([Constraint::Percentage(30), Constraint::Percentage(70)].as_ref())
+            .constraints(
+                [
+                    Constraint::Length(20),
+                    Constraint::Length(40),
+                    Constraint::Min(0),
+                ]
+                .as_ref(),
+            )
             .areas(area_body);
 
-        self.render_tests(frame, area_tests);
-        self.render_logs(frame, area_logs);
+        self.render_selection(frame, area_selection);
+        self.render_configuration(frame, area_configuration);
+        self.render_running(frame, area_running);
         self.render_commands(frame, area_foot);
     }
 
-    fn render_tests(&self, frame: &mut Frame, area: Rect) {
-        let block = Block::default().title("Tests").borders(Borders::ALL);
-
+    fn render_selection(&self, frame: &mut Frame, area: Rect) {
         let items: Vec<ListItem> = self
             .tests
             .iter()
@@ -116,7 +160,7 @@ impl Bench {
             .map(|(index, test)| {
                 let mut style = Style::default();
 
-                if index == self.selected {
+                if index == self.selected_test {
                     style = style.fg(Color::Black).bg(Color::White);
                 }
 
@@ -124,13 +168,21 @@ impl Bench {
             })
             .collect();
 
-        let tests = List::new(items).block(block);
+        let tests = List::new(items).block(self.block("Selection", View::Selection));
 
         frame.render_widget(tests, area)
     }
 
-    fn render_logs(&self, frame: &mut Frame, area: Rect) {
-        let block = Block::default().title("Logs").borders(Borders::ALL);
+    fn render_configuration(&self, frame: &mut Frame, area: Rect) {
+        // todo
+
+        frame.render_widget(self.block("Configuration", View::Configuration), area)
+    }
+
+    fn render_running(&mut self, frame: &mut Frame, area: Rect) {
+        while let Ok(log) = self.log_receiver.try_recv() {
+            self.logs.push(log);
+        }
 
         let items: Vec<ListItem> = self
             .logs
@@ -140,28 +192,46 @@ impl Bench {
                 let style = match log.log_type {
                     LogType::Success => Style::default().fg(Color::Green),
                     LogType::Failed => Style::default().fg(Color::Red),
-                    LogType::Information => Style::default().fg(Color::White)
+                    LogType::Information => Style::default().fg(Color::White),
                 };
 
                 let mut lines = Vec::new();
                 lines.push(Line::from(log.message.clone()));
-                log.details.iter().for_each(|detail| lines.push(Line::from(detail.clone())));
+                log.details
+                    .iter()
+                    .for_each(|detail| lines.push(Line::from(detail.clone())));
 
                 ListItem::new(Text::from(lines)).style(style)
             })
             .collect();
 
-        let tests = List::new(items).direction(ListDirection::BottomToTop).block(block);
+        let tests = List::new(items)
+            .direction(ListDirection::BottomToTop)
+            .block(self.block("Logs", View::Running));
 
         frame.render_widget(tests, area)
     }
 
     fn render_commands(&self, frame: &mut Frame, area: Rect) {
         let block = Block::default().title("Commands").borders(Borders::ALL);
-        let text = Text::raw("[Q] Quit | [↑] Up | [↓] Down");
+        // todo change info depending on selected view
+        let text = Text::raw("[Q] Quit | [Enter] Select | [Exc] Back | [↑] Up | [↓] Down");
         let commands = Paragraph::new(text).block(block);
 
         frame.render_widget(commands, area)
+    }
+
+    fn block(&self, title: &'static str, view: View) -> Block {
+        let mut style = Style::default().fg(Color::Gray);
+
+        if self.view == view {
+            style = style.fg(Color::White)
+        }
+
+        Block::default()
+            .title(title)
+            .borders(Borders::ALL)
+            .border_style(style)
     }
 }
 

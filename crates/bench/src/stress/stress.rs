@@ -18,9 +18,8 @@ impl Test for Stress {
         "Stress".to_string()
     }
 
-    fn run(&self, configuration: Configuration, logger: Logger) {
+    fn run(&self, configuration: Configuration, logger: Arc<Logger>) {
 
-        let logger = Arc::new(logger);
         let configuration = Arc::new(configuration);
 
         logger.information("Starting stress test");
@@ -43,7 +42,6 @@ fn stress_connection(configuration: Arc<Configuration>, logger: Arc<Logger>) -> 
     thread::spawn(move || {
         for _ in 0..configuration.custom_usize("requests") {
             let request = Request::Structured {
-                address: configuration.address(),
                 method: "GET",
                 path: "/index.html",
                 version: "HTTP/1.1",
@@ -51,10 +49,15 @@ fn stress_connection(configuration: Arc<Configuration>, logger: Arc<Logger>) -> 
                 body: "",
             };
 
-            let mut response = request.send();
+            let response = request.send(configuration.address());
 
-            if response.status_code() != 200 {
-                logger.failed(format!("Non 200 status code {}", response.status_code()));
+            match response {
+                Ok(response) => {
+                    if response.status_code != 200 {
+                        logger.failed(format!("Non 200 status code {}", response.status_code));
+                    }
+                }
+                Err(error) => logger.failed(error)
             }
         }
     })

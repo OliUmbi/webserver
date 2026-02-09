@@ -5,6 +5,12 @@ pub struct Logger {
 }
 
 impl Logger {
+    pub fn new(sender: mpsc::Sender<Log>) -> Self {
+        Self {
+            sender
+        }
+    }
+
     pub fn success(&self, message: impl Into<String>) {
         self.sender
             .send(Log::new(LogType::Success, message))

@@ -3,12 +3,8 @@ use std::io::{Write};
 use std::net::TcpStream;
 
 pub enum Request {
-    Raw {
-        address: String,
-        raw: String,
-    },
+    Raw(&'static str),
     Structured {
-        address: String,
         method: &'static str,
         path: &'static str,
         version: &'static str,
@@ -17,12 +13,11 @@ pub enum Request {
     },
 }
 
-impl Request {
-    pub fn send(&self) -> Response {
+impl Request {    
+    pub fn send(&self, address: String) -> Result<Response, String> {
         match self {
-            Request::Raw { address, raw } => send_raw(address, raw),
+            Request::Raw(raw) => send_raw(address, raw.to_string()),
             Request::Structured {
-                address,
                 method,
                 path,
                 version,
@@ -33,41 +28,38 @@ impl Request {
     }
 }
 
-fn send_raw(address: &String, raw: &String) -> Response {
-    let mut stream = TcpStream::connect(address).unwrap();
+fn send_raw(address: String, raw: String) -> Result<Response, String> {
+    let mut stream = TcpStream::connect(&address).map_err(|_| format!("Failed to connect to address: {}", address))?;
 
-    stream.write_all(raw.as_bytes()).unwrap();
+    stream.write_all(raw.as_bytes()).map_err(|_| format!("Failed to write request: {}", raw))?;
 
     Response::new(stream)
 }
 
 fn send_structured(
-    address: &String,
+    address: String,
     method: &str,
     path: &str,
     version: &str,
     headers: &Vec<&str>,
     body: &str,
-) -> Response {
-    let mut stream = TcpStream::connect(address).unwrap();
+) -> Result<Response, String> {
 
-    let mut message = String::new();
-    message.push_str(method);
-    message.push(' ');
-    message.push_str(path);
-    message.push(' ');
-    message.push_str(version);
-    message.push_str("\r\n");
+    let mut raw = String::new();
+    raw.push_str(method);
+    raw.push(' ');
+    raw.push_str(path);
+    raw.push(' ');
+    raw.push_str(version);
+    raw.push_str("\r\n");
 
     for header in headers {
-        message.push_str(header);
-        message.push_str("\r\n");
+        raw.push_str(header);
+        raw.push_str("\r\n");
     }
 
-    message.push_str("\r\n");
-    message.push_str(body);
+    raw.push_str("\r\n");
+    raw.push_str(body);
 
-    stream.write_all(message.as_bytes()).unwrap();
-
-    Response::new(stream)
+    send_raw(address, raw)
 }

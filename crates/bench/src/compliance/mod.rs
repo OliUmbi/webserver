@@ -1,3 +1,1 @@
-pub mod case;
-pub mod cases;
-pub mod runner;
+pub mod compliance;
