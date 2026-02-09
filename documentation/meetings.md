@@ -107,13 +107,12 @@
 - status
     - basic bench tool implemented
     - centralized documentation
-    - documented skills
 - goals
-    - docker setup
+    - example deployment (docker)
     - finalize documentation
     - validate requirements with bench tool
-    - clean example setup
     - prepare exhibition
 - deadlines
     - 12.02. goal validation (pass/fail)
 - feedback
+  - final meeting 11.02.
