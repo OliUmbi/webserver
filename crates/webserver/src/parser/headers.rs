@@ -10,7 +10,7 @@ pub fn parse(raw_headers: Vec<String>) -> Result<Headers, ParserError> {
             .split_once(':')
             .ok_or_else(|| ParserError::new(StatusCode::BadRequest, "Malformed header"))?;
 
-        headers.add(name.trim(), value.trim());
+        headers.add(name.trim(), value.trim())?;
     }
 
     Ok(headers)

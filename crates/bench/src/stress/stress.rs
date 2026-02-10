@@ -5,6 +5,9 @@ use crate::test::configuration::Configuration;
 use crate::test::log::Logger;
 use crate::test::test::Test;
 
+const CONNECTIONS: usize = 32;
+const REQUESTS: usize = 128;
+
 pub struct Stress {}
 
 impl Stress {
@@ -22,9 +25,9 @@ impl Test for Stress {
 
         logger.information("Starting stress test");
 
-        let mut threads = Vec::with_capacity(configuration.custom_usize("connections"));
+        let mut threads = Vec::with_capacity(CONNECTIONS);
 
-        for _ in 0..configuration.custom_usize("connections") {
+        for _ in 0..CONNECTIONS {
             threads.push(stress_connection(configuration.clone(), logger.clone()));
         }
 
@@ -32,13 +35,15 @@ impl Test for Stress {
             thread.join().unwrap();
         }
 
+        // todo duration, errors, etc.
+
         logger.information("Finished stress test");
     }
 }
 
 fn stress_connection(configuration: Arc<Configuration>, logger: Arc<Logger>) -> thread::JoinHandle<()> {
     thread::spawn(move || {
-        for _ in 0..configuration.custom_usize("requests") {
+        for _ in 0..REQUESTS {
             let request = Request::Structured {
                 method: "GET",
                 path: "/index.html",

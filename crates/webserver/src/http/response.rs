@@ -22,8 +22,8 @@ impl Response {
         let body = format!("Error: {}", message);
 
         let mut headers = Headers::new();
-        headers.add("Content-Type", "text/plain");
-        headers.add("Content-Length", format!("{}", body.len()));
+        headers.add("Content-Type", "text/plain").unwrap();
+        headers.add("Content-Length", format!("{}", body.len())).unwrap();
 
         Response {
             response_line: ResponseLine::new(Protocol::Http1_1, status),

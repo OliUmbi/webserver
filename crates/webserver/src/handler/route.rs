@@ -3,8 +3,10 @@ use crate::configuration::internal::configuration::Configuration;
 use crate::configuration::internal::route::Route;
 use crate::handler::handler_error::HandlerError;
 use crate::handler::{fixed, proxy, redirect};
+use crate::http::headers::Headers;
 use crate::http::request::Request;
 use crate::http::response::Response;
+use crate::http::status_code::StatusCode;
 use crate::server::connection::Connection;
 
 pub fn handle(
@@ -13,6 +15,11 @@ pub fn handle(
     connection: &mut Connection,
     configuration: &Configuration,
 ) -> Result<Response, HandlerError> {
+    
+    if request.headers.expect() { 
+        return Ok(Response::new(StatusCode::Continue, Headers::new(), Vec::new()))
+    }
+    
     match &route.action {
         Action::Fixed { root, fallback } => fixed::handle(root, fallback, request),
         Action::Proxy { location } => proxy::handle(location, request, connection, configuration),

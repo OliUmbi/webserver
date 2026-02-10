@@ -11,11 +11,11 @@ pub fn parse(
 ) -> Result<Body, ParserError> {
     let mut body_kind = BodyKind::Empty;
 
-    if headers.is_chunked() {
+    if headers.is_chunked()? {
         body_kind = BodyKind::Chunked;
     }
 
-    if let Some(content_length) = headers.content_length() {
+    if let Some(content_length) = headers.content_length()? {
         if content_length > configuration.server.max_body_length {
             return Err(ParserError::new(
                 StatusCode::ContentTooLarge,

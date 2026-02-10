@@ -1,4 +1,4 @@
-use std::arch::x86_64::_mm256_bitshuffle_epi64_mask;
+use crate::test::configuration::Configuration;
 use crate::test::log::{Log, LogType, Logger};
 use crate::test::test::Test;
 use crossterm::event::{poll, Event, KeyCode, KeyEventKind};
@@ -13,13 +13,10 @@ use ratatui::text::Line;
 use ratatui::widgets::{Block, Borders, List, ListDirection, ListItem, Paragraph, StatefulWidget};
 use ratatui::{Frame, Terminal};
 use std::cmp::PartialEq;
-use std::collections::HashMap;
-use std::{io, thread};
 use std::io::Stdout;
 use std::sync::{mpsc, Arc};
 use std::time::Duration;
-use log::log;
-use crate::test::configuration::Configuration;
+use std::{io, thread};
 
 const TICK_RATE: Duration = Duration::from_millis(200);
 
@@ -28,16 +25,8 @@ pub struct Bench {
     running: bool,
     logger: Arc<Logger>,
     log_receiver: mpsc::Receiver<Log>,
-    view: View,
     selected_test: usize,
     logs: Vec<Log>,
-}
-
-#[derive(PartialEq)]
-enum View {
-    Selection,
-    Configuration,
-    Running,
 }
 
 impl Bench {
@@ -53,9 +42,8 @@ impl Bench {
             running: true,
             logger: Arc::new(Logger::new(log_sender)),
             log_receiver,
-            view: View::Selection,
             selected_test: 0,
-            logs: Vec::new()
+            logs: Vec::new(),
         }
     }
 
@@ -79,31 +67,13 @@ impl Bench {
                 if key.code == KeyCode::Char('q') {
                     self.running = false
                 }
-                if key.code == KeyCode::Up {
-                    if self.view == View::Selection && self.selected_test != 0 {
-                        self.selected_test -= 1;
-                    }
+                if key.code == KeyCode::Up && self.selected_test != 0 {
+                    self.selected_test -= 1;
                 }
-                if key.code == KeyCode::Down {
-                    if self.view == View::Selection && self.selected_test != self.tests.len() - 1 {
-                        self.selected_test += 1;
-                    }
+                if key.code == KeyCode::Down && self.selected_test != self.tests.len() - 1 {
+                    self.selected_test += 1;
                 }
                 if key.code == KeyCode::Enter {
-                    match self.view {
-                        View::Selection => self.view = View::Configuration,
-                        View::Configuration => self.view = View::Running,
-                        _ => (),
-                    }
-                }
-                if key.code == KeyCode::Esc {
-                    match self.view {
-                        View::Configuration => self.view = View::Selection,
-                        View::Running => self.view = View::Configuration,
-                        _ => {}
-                    }
-                }
-                if key.code == KeyCode::Home {
                     self.start_test()
                 }
             }
@@ -113,18 +83,12 @@ impl Bench {
     fn start_test(&self) {
         let test = self.tests.get(self.selected_test).unwrap();
 
-        let mut custom = HashMap::new();
-        custom.insert("connections".to_string(), "3".to_string());
-        custom.insert("requests".to_string(), "10".to_string());
-
-        let configuration = Arc::new(Configuration::new("127.0.0.1:80".to_string(), custom));
+        let configuration = Arc::new(Configuration::new("127.0.0.1:80"));
 
         let test = test.clone();
         let logger = self.logger.clone();
 
-        thread::spawn(move || {
-            test.run(configuration, logger)
-        });
+        thread::spawn(move || test.run(configuration, logger));
     }
 
     fn render(&mut self, frame: &mut Frame) {
@@ -133,25 +97,19 @@ impl Bench {
             .constraints([Constraint::Min(0), Constraint::Length(3)].as_ref())
             .areas(frame.area());
 
-        let [area_selection, area_configuration, area_running] = Layout::default()
+        let [area_tests, area_logs] = Layout::default()
             .direction(Direction::Horizontal)
-            .constraints(
-                [
-                    Constraint::Length(20),
-                    Constraint::Length(40),
-                    Constraint::Min(0),
-                ]
-                .as_ref(),
-            )
+            .constraints([Constraint::Length(40), Constraint::Min(0)].as_ref())
             .areas(area_body);
 
-        self.render_selection(frame, area_selection);
-        self.render_configuration(frame, area_configuration);
-        self.render_running(frame, area_running);
+        self.render_tests(frame, area_tests);
+        self.render_logs(frame, area_logs);
         self.render_commands(frame, area_foot);
     }
 
-    fn render_selection(&self, frame: &mut Frame, area: Rect) {
+    fn render_tests(&self, frame: &mut Frame, area: Rect) {
+        let block = Block::default().title("Tests").borders(Borders::ALL);
+
         let items: Vec<ListItem> = self
             .tests
             .iter()
@@ -167,21 +125,17 @@ impl Bench {
             })
             .collect();
 
-        let tests = List::new(items).block(self.block("Selection", View::Selection));
+        let tests = List::new(items).block(block);
 
         frame.render_widget(tests, area)
     }
 
-    fn render_configuration(&self, frame: &mut Frame, area: Rect) {
-        // todo
-
-        frame.render_widget(self.block("Configuration", View::Configuration), area)
-    }
-
-    fn render_running(&mut self, frame: &mut Frame, area: Rect) {
+    fn render_logs(&mut self, frame: &mut Frame, area: Rect) {
         while let Ok(log) = self.log_receiver.try_recv() {
             self.logs.push(log);
         }
+
+        let block = Block::default().title("Logs").borders(Borders::ALL);
 
         let items: Vec<ListItem> = self
             .logs
@@ -206,7 +160,7 @@ impl Bench {
 
         let tests = List::new(items)
             .direction(ListDirection::BottomToTop)
-            .block(self.block("Logs", View::Running));
+            .block(block);
 
         frame.render_widget(tests, area)
     }
@@ -218,19 +172,6 @@ impl Bench {
         let commands = Paragraph::new(text).block(block);
 
         frame.render_widget(commands, area)
-    }
-
-    fn block(&self, title: &'static str, view: View) -> Block {
-        let mut style = Style::default().fg(Color::Gray);
-
-        if self.view == view {
-            style = style.fg(Color::White)
-        }
-
-        Block::default()
-            .title(title)
-            .borders(Borders::ALL)
-            .border_style(style)
     }
 }
 

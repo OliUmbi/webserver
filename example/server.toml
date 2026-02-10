@@ -1,4 +1,4 @@
-headless = false
+headless = true
 
 [server]
 threads = 8
@@ -6,8 +6,9 @@ timeout = 1
 
 [[routes]]
 
-[routes.path]
-Exact = "/hello"
+[routes.path.Exact]
+exact = "/"
+methods = "GET"
 
 [routes.action.Redirect]
 location = "index.html"
@@ -15,17 +16,18 @@ status_code = 307
 
 [[routes]]
 
-[routes.path]
-Regex = "/(jublawoma|jublawoma-admin|unclet-admin|oliumbi-admin)"
+[routes.path.Regex]
+regex = "/(jublawoma|jublawoma-admin|unclet-admin|oliumbi-admin)"
 
 [routes.action.Proxy]
 location = "localhost:8080"
 
 [[routes]]
 
-[routes.path]
-Prefix = "/"
+[routes.path.Prefix]
+prefix = "/"
+methods = "GET,POST"
 
 [routes.action.Fixed]
-root = "./examples/demo/"
+root = "/example/demo/"
 fallback = "./notfound.html"

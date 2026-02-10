@@ -12,9 +12,9 @@ pub fn resolve<'a>(
 ) -> Result<&'a Route, RoutingError> {
     for route in &configuration.routes {
         if match &route.path {
-            Path::Exact(path) => exact::matches(path, request),
-            Path::Prefix(path) => prefix::matches(path, request),
-            Path::Regex(regex) => regex::matches(regex, request),
+            Path::Exact { exact, methods } => exact::matches(exact, methods, request),
+            Path::Prefix { prefix, methods } => prefix::matches(prefix, methods, request),
+            Path::Regex { regex, methods } => regex::matches(regex, methods, request),
         } {
             return Ok(route);
         }

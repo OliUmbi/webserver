@@ -1,0 +1,10 @@
+services:
+  webserver:
+    image: webserver:0.9
+    restart: always
+    ports:
+      - "8080:80"
+    volumes:
+      - ../example:/example
+    environment:
+      - CONFIGURATION_PATH=/example/server.toml

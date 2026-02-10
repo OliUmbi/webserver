@@ -8,7 +8,7 @@ pub fn handle(
     status_code: &StatusCode
 ) -> Result<Response, HandlerError> {
     let mut headers = Headers::new();
-    headers.add("Location", location);
+    headers.add("Location", location).unwrap();
 
     Ok(Response::new(*status_code, headers, Vec::new()))
 }

@@ -54,8 +54,8 @@ pub fn handle(
     };
 
     let mut response_headers = Headers::new();
-    response_headers.add("Content-Type", media_type.as_str());
-    response_headers.add("Content-Length", file.len().to_string());
+    response_headers.add("Content-Type", media_type.as_str()).unwrap();
+    response_headers.add("Content-Length", file.len().to_string()).unwrap();
 
     Ok(Response::new(
         StatusCode::Ok,
