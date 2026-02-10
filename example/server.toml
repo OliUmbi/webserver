@@ -2,7 +2,7 @@ headless = true
 
 [server]
 threads = 8
-timeout = 1
+timeout_in_secs = 3
 
 [[routes]]
 

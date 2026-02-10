@@ -58,5 +58,10 @@ Correctness and performance are a secondary priority that is demonstrated by a s
 - Full routing and action handling
 - Reverse proxy
 - Terminal user interface for observability
-- Bench suite
 - Docker setup
+
+### Week 5
+
+- Documentation
+- Bench suite
+- Presentation

@@ -2,11 +2,13 @@ use crate::http::request::Request;
 use crate::test::configuration::Configuration;
 use crate::test::log::Logger;
 use crate::test::test::Test;
+use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::Arc;
 use std::thread;
+use std::time::Instant;
 
 const CONNECTIONS: usize = 32;
-const REQUESTS: usize = 128;
+const REQUESTS: usize = 1024;
 
 pub struct Stress {}
 
@@ -25,22 +27,27 @@ impl Test for Stress {
         logger.information("Starting stress test");
 
         let mut threads = Vec::with_capacity(CONNECTIONS);
+        let error_counter = Arc::new(AtomicUsize::new(0));
+        let start = Instant::now();
 
         for _ in 0..CONNECTIONS {
-            threads.push(stress_connection(configuration.clone(), logger.clone()));
+            threads.push(stress_connection(configuration.clone(), logger.clone(), error_counter.clone()));
         }
 
         for thread in threads {
             thread.join().unwrap();
         }
 
-        // todo duration, errors, etc.
+        let requests = CONNECTIONS * REQUESTS;
+        let duration = start.elapsed().as_secs_f32();
+
+        logger.success(format!("Requests: {}, Time: {:.3}s, Req/Sec {:.1}, Errors: {}", requests, duration, (requests as f32) / duration, error_counter.load(Ordering::Relaxed)));
 
         logger.information("Finished stress test");
     }
 }
 
-fn stress_connection(configuration: Arc<Configuration>, logger: Arc<Logger>) -> thread::JoinHandle<()> {
+fn stress_connection(configuration: Arc<Configuration>, logger: Arc<Logger>, error_counter: Arc<AtomicUsize>) -> thread::JoinHandle<()> {
     thread::spawn(move || {
         for _ in 0..REQUESTS {
             let request = Request::Structured {
@@ -56,10 +63,14 @@ fn stress_connection(configuration: Arc<Configuration>, logger: Arc<Logger>) -> 
             match response {
                 Ok(response) => {
                     if response.status_code != 200 {
+                        error_counter.fetch_add(1, Ordering::Relaxed);
                         logger.failed(format!("Non 200 status code {}", response.status_code));
                     }
                 }
-                Err(error) => logger.failed(error)
+                Err(error) => {
+                    error_counter.fetch_add(1, Ordering::Relaxed);
+                    logger.failed(error)
+                }
             }
         }
     })

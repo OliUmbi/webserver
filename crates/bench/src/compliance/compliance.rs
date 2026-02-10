@@ -208,7 +208,7 @@ pub fn cases() -> Vec<Case> {
         Case {
             name: "Invalid Prefix",
             request: Request::Raw("InvalidGET /index.html HTTP/1.1\r\nHost: bench\r\n\r\n"),
-            status: vec![400]
+            status: vec![405]
         },
         Case {
             name: "Valid GET",

@@ -214,7 +214,7 @@ fn handle_connection(stream: TcpStream, configuration: &Configuration, telemetry
     let mut connection = match Connection::new(stream, configuration.server.timeout) {
         Ok(connection) => connection,
         Err(error) => {
-            telemetry.event_error(format!("Connection construction failed: {}", error.message), None);
+            telemetry.event_error(error.message, None);
             return;
         }
     };
@@ -225,7 +225,12 @@ fn handle_connection(stream: TcpStream, configuration: &Configuration, telemetry
 
     match connection.write_response(response) {
         Ok(_) => {}
-        Err(error) => telemetry.event_error(format!("Connection write failed: {}", error.message), None),
+        Err(error) => telemetry.event_error(error.message, None),
+    }
+    
+    match connection.close() {
+        Ok(_) => {}
+        Err(error) => telemetry.event_error(error.message, None),
     }
 }
 

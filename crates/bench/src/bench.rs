@@ -166,7 +166,7 @@ impl Bench {
 
     fn render_commands(&self, frame: &mut Frame, area: Rect) {
         let block = Block::default().title("Commands").borders(Borders::ALL);
-        let text = Text::raw("[Q] Quit | [Enter] Select | [Exc] Back | [↑] Up | [↓] Down");
+        let text = Text::raw("[Q] Quit | [↑] Up | [↓] Down | [Enter] Run");
         let commands = Paragraph::new(text).block(block);
 
         frame.render_widget(commands, area)

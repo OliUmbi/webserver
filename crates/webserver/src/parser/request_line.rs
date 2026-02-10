@@ -13,7 +13,7 @@ pub fn parse(raw_request_line: String) -> Result<RequestLine, ParserError> {
         .ok_or_else(|| ParserError::new(StatusCode::BadRequest, "Method missing"))?;
 
     let method = Method::from_str(raw_method)
-        .map_err(|_| ParserError::new(StatusCode::BadRequest, "Invalid method"))?;
+        .map_err(|_| ParserError::new(StatusCode::MethodNotAllowed, "Invalid method"))?;
 
     let raw_url = components
         .next()

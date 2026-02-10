@@ -98,7 +98,7 @@
     - reverse proxy redirect
     - http spec dos and donts
 
-## 09.02. Wednesday
+## 09.02. Monday
 
 11:00 - 11:30, Online
 
@@ -116,3 +116,13 @@
     - 12.02. goal validation (pass/fail)
 - feedback
   - final meeting 11.02.
+
+
+## 10.02. Wednesday
+
+11:00 - 11:45, 5.2B34
+
+### Topics
+
+- final presentation
+- assessment discussion

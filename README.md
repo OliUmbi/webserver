@@ -23,6 +23,9 @@ In the `/crates` folder are the two applications:
 - `bench`
   - Tool to validate Functional and Non-Functional requirements like specification compliance or load tests
 
-## Examples
+## Build and Run
 
+Run the application `cargo run --package webserver`
+
+Build executable `cargo build --package webserver`
 

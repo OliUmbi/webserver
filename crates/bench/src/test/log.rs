@@ -76,7 +76,6 @@ impl Log {
     }
 }
 
-// todo rename PASS, FAIL, INFO
 pub enum LogType {
     Success,
     Failed,

@@ -114,3 +114,16 @@
 ## 09.02. Monday
 
 - coach meeting
+- improved bench tool
+
+## 10.02. Tuesday
+
+- coach meeting
+- compliance tests
+- docker setup and deployment process
+
+## 11.02. Wednesday
+
+- final coach meeting for assessments
+
+

@@ -11,4 +11,7 @@
 
 ## AI
 
+AI was primarily used to help learn Rust specific concepts and techniques.
+No code was directly copied but helped in the decision making and as a sparring partner. 
+This use helped to learn and solve problems that are Rust specific due to unfamiliarity with the language itself. 
 
