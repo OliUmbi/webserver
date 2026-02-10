@@ -1,18 +1,18 @@
-use regex::Regex;
 use crate::http::method::Method;
+use regex::Regex;
 
 #[derive(Debug)]
 pub enum Path {
     Exact {
         exact: String,
-        methods: Vec<Method>
+        methods: Vec<Method>,
     },
     Prefix {
         prefix: String,
-        methods: Vec<Method>
+        methods: Vec<Method>,
     },
     Regex {
         regex: Regex,
-        methods: Vec<Method>
+        methods: Vec<Method>,
     },
 }

@@ -8,7 +8,7 @@ impl Configuration {
             address: address.into(),
         }
     }
-    
+
     pub fn address(&self) -> String {
         self.address.clone()
     }

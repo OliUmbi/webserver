@@ -39,7 +39,7 @@ pub fn render(tui: &mut Tui, configuration: &Arc<Configuration>) -> Result<(), T
                             Constraint::Min(0),
                             Constraint::Length(3),
                         ]
-                        .as_ref(),
+                            .as_ref(),
                     )
                     .areas(frame.area());
 

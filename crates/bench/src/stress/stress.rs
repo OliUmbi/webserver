@@ -1,9 +1,9 @@
-use std::sync::Arc;
-use std::thread;
 use crate::http::request::Request;
 use crate::test::configuration::Configuration;
 use crate::test::log::Logger;
 use crate::test::test::Test;
+use std::sync::Arc;
+use std::thread;
 
 const CONNECTIONS: usize = 32;
 const REQUESTS: usize = 128;
@@ -22,7 +22,6 @@ impl Test for Stress {
     }
 
     fn run(&self, configuration: Arc<Configuration>, logger: Arc<Logger>) {
-
         logger.information("Starting stress test");
 
         let mut threads = Vec::with_capacity(CONNECTIONS);

@@ -44,7 +44,7 @@ impl Headers {
             .join("\r\n")
     }
 
-    pub fn get(&self, name: &str) -> impl Iterator<Item = &str> {
+    pub fn get(&self, name: &str) -> impl Iterator<Item=&str> {
         self.entries
             .iter()
             .filter(move |h| h.name.eq_ignore_ascii_case(name))

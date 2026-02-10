@@ -1,5 +1,5 @@
 use crate::http::response::Response;
-use std::io::{Write};
+use std::io::Write;
 use std::net::TcpStream;
 
 pub enum Request {
@@ -13,7 +13,7 @@ pub enum Request {
     },
 }
 
-impl Request {    
+impl Request {
     pub fn send(&self, address: String) -> Result<Response, String> {
         match self {
             Request::Raw(raw) => send_raw(address, raw.to_string()),
@@ -44,7 +44,6 @@ fn send_structured(
     headers: &Vec<&str>,
     body: &str,
 ) -> Result<Response, String> {
-
     let mut raw = String::new();
     raw.push_str(method);
     raw.push(' ');

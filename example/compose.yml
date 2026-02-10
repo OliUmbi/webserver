@@ -7,4 +7,4 @@ services:
     volumes:
       - ../example:/example
     environment:
-      - CONFIGURATION_PATH=/example/server.toml
+      - CONFIGURATION_PATH=./example/server.toml

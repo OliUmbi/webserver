@@ -10,9 +10,8 @@ use ratatui::backend::CrosstermBackend;
 use ratatui::layout::{Constraint, Direction, Layout, Rect};
 use ratatui::prelude::{Color, Style, Text};
 use ratatui::text::Line;
-use ratatui::widgets::{Block, Borders, List, ListDirection, ListItem, Paragraph, StatefulWidget};
+use ratatui::widgets::{Block, Borders, List, ListDirection, ListItem, Paragraph};
 use ratatui::{Frame, Terminal};
-use std::cmp::PartialEq;
 use std::io::Stdout;
 use std::sync::{mpsc, Arc};
 use std::time::Duration;
@@ -167,7 +166,6 @@ impl Bench {
 
     fn render_commands(&self, frame: &mut Frame, area: Rect) {
         let block = Block::default().title("Commands").borders(Borders::ALL);
-        // todo change info depending on selected view
         let text = Text::raw("[Q] Quit | [Enter] Select | [Exc] Back | [↑] Up | [↓] Down");
         let commands = Paragraph::new(text).block(block);
 

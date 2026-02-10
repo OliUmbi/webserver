@@ -8,7 +8,6 @@ use std::net::{SocketAddr, TcpListener, TcpStream};
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{mpsc, Arc};
 use std::thread;
-use crate::validation::validation_error::ValidationError;
 
 pub struct Server {
     running: Arc<AtomicBool>,
@@ -88,12 +87,12 @@ impl Server {
             [0, 0, 0, 0],
             configuration.server.port as u16,
         )))
-        .map_err(|error| {
-            ServerError::new(format!(
-                "Failed to bind port: {}, error: {}",
-                configuration.server.port, error
-            ))
-        })
+            .map_err(|error| {
+                ServerError::new(format!(
+                    "Failed to bind port: {}, error: {}",
+                    configuration.server.port, error
+                ))
+            })
     }
 
     fn start_acceptor(
@@ -239,8 +238,8 @@ fn handle_request(
         Ok(request) => request,
         Err(error) => {
             telemetry.event_error(&error.message, Some(error.status));
-            return Response::from(error)
-        },
+            return Response::from(error);
+        }
     };
 
     telemetry.event_request(
@@ -249,27 +248,27 @@ fn handle_request(
     );
 
     match validation::request::validate(&request) {
-        Ok(_) => {},
+        Ok(_) => {}
         Err(error) => {
             telemetry.event_error(&error.message, Some(error.status));
-            return Response::from(error)
-        },
+            return Response::from(error);
+        }
     }
 
     let route = match routing::router::resolve(&request, &configuration) {
         Ok(route) => route,
         Err(error) => {
             telemetry.event_error(&error.message, Some(error.status));
-            return Response::from(error)
-        },
+            return Response::from(error);
+        }
     };
 
     let response = match handler::route::handle(&mut request, &route, connection, &configuration) {
         Ok(response) => response,
         Err(error) => {
             telemetry.event_error(&error.message, Some(error.status));
-            return Response::from(error)
-        },
+            return Response::from(error);
+        }
     };
 
     response

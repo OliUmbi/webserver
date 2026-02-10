@@ -29,5 +29,5 @@ prefix = "/"
 methods = "GET,POST"
 
 [routes.action.Fixed]
-root = "/example/demo/"
+root = "./example/demo/"
 fallback = "./notfound.html"

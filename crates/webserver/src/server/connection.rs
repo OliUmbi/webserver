@@ -13,14 +13,14 @@ impl Connection {
     pub fn new(stream: TcpStream, timeout: Duration) -> Result<Self, ServerError> {
         stream.set_read_timeout(Some(timeout))
             .map_err(|_| ServerError::new("Failed to set timeout"))?;
-        
+
         stream.set_write_timeout(Some(timeout))
             .map_err(|_| ServerError::new("Failed to set timeout"))?;
-        
+
         let peer = stream
             .peer_addr()
             .map_err(|_| ServerError::new("Failed to get peer address"))?;
-        
+
         Ok(Self {
             stream,
             peer,

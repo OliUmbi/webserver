@@ -22,6 +22,6 @@ pub fn handle(
     upstream_connection.write_request(request).map_err(|_| HandlerError::new(StatusCode::ServiceUnavailable, "Failed to forward to upstream service"))?;
 
     let upstream_response = parser::response::parse(&mut upstream_connection, &configuration).map_err(|_| HandlerError::new(StatusCode::BadGateway, "Upstream service sent invalid response"))?;
-    
+
     Ok(upstream_response)
 }

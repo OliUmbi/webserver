@@ -22,7 +22,6 @@ impl Test for Compliance {
     }
 
     fn run(&self, configuration: Arc<Configuration>, logger: Arc<Logger>) {
-
         logger.information("Started compliance test");
 
         let mut cases_per_thread: Vec<Vec<Case>> = Vec::with_capacity(THREADS);
@@ -67,7 +66,7 @@ fn run_case(cases: Vec<Case>, configuration: Arc<Configuration>, logger: Arc<Log
                     } else {
                         logger.failed(error)
                     }
-                },
+                }
             }
         }
     })

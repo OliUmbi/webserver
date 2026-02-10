@@ -15,11 +15,10 @@ pub fn handle(
     connection: &mut Connection,
     configuration: &Configuration,
 ) -> Result<Response, HandlerError> {
-    
-    if request.headers.expect() { 
-        return Ok(Response::new(StatusCode::Continue, Headers::new(), Vec::new()))
+    if request.headers.expect() {
+        return Ok(Response::new(StatusCode::Continue, Headers::new(), Vec::new()));
     }
-    
+
     match &route.action {
         Action::Fixed { root, fallback } => fixed::handle(root, fallback, request),
         Action::Proxy { location } => proxy::handle(location, request, connection, configuration),

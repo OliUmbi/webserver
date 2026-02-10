@@ -4,7 +4,7 @@ use std::net::TcpStream;
 pub struct Response {
     stream: TcpStream,
     data: String,
-    pub status_code: usize
+    pub status_code: usize,
 }
 
 impl Response {
@@ -13,7 +13,7 @@ impl Response {
         let n = stream.read(&mut buffer).map_err(|_| "Failed to read response")?;
 
         if n == 0 {
-            return Err("Failed to read response".to_string())
+            return Err("Failed to read response".to_string());
         }
 
         let data = String::from_utf8(Vec::from(buffer)).map_err(|_| "Failed to interpret response to UTF-8")?;
@@ -23,7 +23,7 @@ impl Response {
         Ok(Self {
             stream,
             data,
-            status_code
+            status_code,
         })
     }
 }

@@ -58,7 +58,7 @@ impl Body {
                 .map_err(|_| ParserError::new(StatusCode::BadRequest, "Failed to read body"))?;
             self.buffer.extend(rest);
         }
-        
+
         Ok(())
     }
 

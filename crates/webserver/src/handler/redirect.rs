@@ -5,7 +5,7 @@ use crate::http::status_code::StatusCode;
 
 pub fn handle(
     location: &String,
-    status_code: &StatusCode
+    status_code: &StatusCode,
 ) -> Result<Response, HandlerError> {
     let mut headers = Headers::new();
     headers.add("Location", location).unwrap();

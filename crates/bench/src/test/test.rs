@@ -1,6 +1,6 @@
-use std::sync::{mpsc, Arc};
 use crate::test::configuration::Configuration;
-use crate::test::log::{Logger};
+use crate::test::log::Logger;
+use std::sync::Arc;
 
 pub trait Test: Send + Sync {
     fn name(&self) -> String;
