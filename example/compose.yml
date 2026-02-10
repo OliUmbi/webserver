@@ -1,6 +1,6 @@
 services:
   webserver:
-    image: webserver:0.9
+    image: ghcr.io/oliumbi/webserver:latest
     restart: always
     ports:
       - "8080:80"
