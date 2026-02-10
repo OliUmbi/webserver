@@ -117,7 +117,7 @@ impl Bench {
         custom.insert("connections".to_string(), "3".to_string());
         custom.insert("requests".to_string(), "10".to_string());
 
-        let configuration = Configuration::new("127.0.0.1:80".to_string(), custom);
+        let configuration = Arc::new(Configuration::new("127.0.0.1:80".to_string(), custom));
 
         let test = test.clone();
         let logger = self.logger.clone();
@@ -126,7 +126,6 @@ impl Bench {
             test.run(configuration, logger)
         });
     }
-
 
     fn render(&mut self, frame: &mut Frame) {
         let [area_body, area_foot] = Layout::default()

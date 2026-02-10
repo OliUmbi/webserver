@@ -2,46 +2,58 @@ use std::collections::HashMap;
 
 #[derive(Debug)]
 pub struct Headers {
-    values: HashMap<String, String>,
+    entries: Vec<Header>,
+}
+
+#[derive(Debug)]
+pub struct Header {
+    name: String,
+    value: String,
 }
 
 impl Headers {
     pub fn new() -> Self {
         Headers {
-            values: HashMap::new(),
+            entries: Vec::new(),
         }
     }
 
     pub fn add(&mut self, name: impl Into<String>, value: impl Into<String>) {
-        self.values.insert(name.into(), value.into());
+        self.entries.push(Header::new(name, value));
     }
 
     pub fn to_http(&self) -> String {
-        self.values
+        self.entries
             .iter()
-            .map(|header| format!("{}: {}", header.0, header.1))
+            .map(|header| format!("{}: {}", header.name, header.value))
             .collect::<Vec<String>>()
             .join("\r\n")
     }
 
+    pub fn get(&self, name: &str) -> impl Iterator<Item = &str> {
+        self.entries
+            .iter()
+            .filter(move |h| h.name.eq_ignore_ascii_case(name))
+            .map(|h| h.value.as_str())
+    }
+
     pub fn is_chunked(&self) -> bool {
-        match self.values.get("Transfer-Encoding") {
-            Some(transfer_encoding) => transfer_encoding.eq_ignore_ascii_case("chunked"),
-            None => false,
-        }
+        self.get("Transfer-Encoding")
+            .any(|transfer_encoding| transfer_encoding.eq_ignore_ascii_case("chunked"))
     }
 
     pub fn content_length(&self) -> Option<usize> {
-        match self.values.get("Content-Length") {
-            Some(length) => match length.parse::<usize>() {
-                Ok(length) => Some(length),
-                Err(_) => None,
-            },
-            None => None,
-        }
+        self.get("Content-Length")
+            .next()
+            .and_then(|len| len.parse().ok())
     }
-    
-    pub fn host(&self) -> Option<&String> {
-        self.values.get("Host")
+}
+
+impl Header {
+    pub fn new(name: impl Into<String>, value: impl Into<String>) -> Self {
+        Self {
+            name: name.into(),
+            value: value.into(),
+        }
     }
 }

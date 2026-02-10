@@ -18,9 +18,7 @@ impl Test for Stress {
         "Stress".to_string()
     }
 
-    fn run(&self, configuration: Configuration, logger: Arc<Logger>) {
-
-        let configuration = Arc::new(configuration);
+    fn run(&self, configuration: Arc<Configuration>, logger: Arc<Logger>) {
 
         logger.information("Starting stress test");
 

@@ -9,8 +9,8 @@ pub fn validate(request: &Request) -> Result<(), ValidationError> {
         return Err(ValidationError::new(StatusCode::MethodNotAllowed, "Trace not allowed"));
     }
 
-    if request.headers.host().is_none() {
-        return Err(ValidationError::new(StatusCode::BadRequest, "Host missing"));
+    if request.headers.get("Host").count() != 1 {
+        return Err(ValidationError::new(StatusCode::BadRequest, "Invalid Host header"));
     }
 
     Ok(())

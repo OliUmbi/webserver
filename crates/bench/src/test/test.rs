@@ -5,5 +5,5 @@ use crate::test::log::{Logger};
 pub trait Test: Send + Sync {
     fn name(&self) -> String;
 
-    fn run(&self, configuration: Configuration, logger: Arc<Logger>);
+    fn run(&self, configuration: Arc<Configuration>, logger: Arc<Logger>);
 }
