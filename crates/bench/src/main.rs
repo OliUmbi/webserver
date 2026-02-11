@@ -9,6 +9,7 @@ mod stress;
 mod test;
 mod bench;
 mod http;
+mod widgets;
 
 fn main() {
     let mut tests: Vec<Arc<dyn Test>> = Vec::new();

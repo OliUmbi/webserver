@@ -10,12 +10,13 @@ use ratatui::backend::CrosstermBackend;
 use ratatui::layout::{Constraint, Direction, Layout, Rect};
 use ratatui::prelude::{Color, Style, Text};
 use ratatui::text::Line;
-use ratatui::widgets::{Block, Borders, List, ListDirection, ListItem, Paragraph};
+use ratatui::widgets::{Block, Borders, Clear, List, ListDirection, ListItem, Paragraph};
 use ratatui::{Frame, Terminal};
 use std::io::Stdout;
 use std::sync::{mpsc, Arc};
 use std::time::Duration;
 use std::{io, thread};
+use ratatui::style::Stylize;
 
 const TICK_RATE: Duration = Duration::from_millis(200);
 
@@ -103,6 +104,7 @@ impl Bench {
 
         self.render_tests(frame, area_tests);
         self.render_logs(frame, area_logs);
+        self.render_configuration(frame, area_body);
         self.render_commands(frame, area_foot);
     }
 
@@ -162,6 +164,17 @@ impl Bench {
             .block(block);
 
         frame.render_widget(tests, area)
+    }
+
+    fn render_configuration(&self, frame: &mut Frame, area: Rect) {
+        let area = area.centered(Constraint::Length(100), Constraint::Length(5));
+
+        let block = Block::default().title("Configuration").borders(Borders::ALL).on_dark_gray();
+        let text = Text::raw("Address");
+        let commands = Paragraph::new(text).block(block);
+
+        frame.render_widget(Clear, area);
+        frame.render_widget(commands, area)
     }
 
     fn render_commands(&self, frame: &mut Frame, area: Rect) {

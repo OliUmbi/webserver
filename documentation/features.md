@@ -32,6 +32,8 @@
 ## Limitations
 
 The thread model is blocking and waits until message head is received or timeout.
+
 Body get loaded into memory for reverse proxy but will only be read if needed.
+
 Connections do not get reused after the first request and will be closed afterwards.
 

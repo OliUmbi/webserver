@@ -19,6 +19,7 @@ Learned:
 - Request framing edge cases
 
 Reflection:
+
 The specification is precise but complex.
 Practical implementation reveals ambiguities that are not obvious when reading the RFC alone.
 
@@ -32,6 +33,7 @@ Learned:
 - Keep-alive vs connection close semantics
 
 Reflection:
+
 Correct framing and lifecycle management is more difficult than request parsing itself.
 
 ## Multithreading
@@ -44,6 +46,7 @@ Learned:
 - Trade-offs between synchronous threads and async runtimes
 
 Reflection:
+
 Concurrency design strongly impacts performance and complexity.
 A asynchronous approach would have been better for the project but too complex to implement in the short time.
 
@@ -58,6 +61,7 @@ Learned:
 - Building modular systems without heavy frameworks
 
 Reflection:
+
 Rust enforces correctness early but increases initial complexity.
 For low-level protocol work it provides strong safety guarantees.
 Confidence in the code / implementation is much higher than other languages

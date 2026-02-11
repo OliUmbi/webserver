@@ -41,7 +41,10 @@ impl Test for Stress {
         let requests = CONNECTIONS * REQUESTS;
         let duration = start.elapsed().as_secs_f32();
 
-        logger.success(format!("Requests: {}, Time: {:.3}s, Req/Sec {:.1}, Errors: {}", requests, duration, (requests as f32) / duration, error_counter.load(Ordering::Relaxed)));
+        logger.success(format!("Requests: {}", requests));
+        logger.success(format!("Time: {:.3}s", duration));
+        logger.success(format!("Req/Sec {:.1}", (requests as f32) / duration));
+        logger.success(format!("Errors: {}", error_counter.load(Ordering::Relaxed)));
 
         logger.information("Finished stress test");
     }
