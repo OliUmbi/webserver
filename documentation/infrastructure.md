@@ -2,24 +2,25 @@
 
 ## Analysis
 
-The webserver needs to be runnable as a Linux service or docker container. 
-Static files from the filesystem should be served. 
+The webserver needs to be runnable as a Linux service or docker container.
+Static files from the filesystem should be served.
 
 ## Design
 
-The webserver serves a similar role to Nginx and Apache. 
+The webserver serves a similar role to Nginx and Apache.
 It is intended to serve files directly or act as a reverse proxy for other applications.
 
 ### Docker
 
 The webserver can be run from a docker container.
-Images are hosted on `ghcr.io/oliumbi/webserver:latest` and are built automatically on new releases via Github actions. 
-For performance the images are minimal and get built in with a dedicated build step. 
-Running in containers is done in the headless mode since no terminal is attached. 
+Images are hosted on `ghcr.io/oliumbi/webserver:latest` and are built automatically on new releases via Github actions.
+For performance the images are minimal and get built in with a dedicated build step.
+Running in containers is done in the headless mode since no terminal is attached.
 
 ### Terminal
 
-Alternatively the webserver can be run directly from a binary and with a terminal user interface for more detailed insights.   
+Alternatively the webserver can be run directly from a binary and with a terminal user interface for more detailed
+insights.
 
 ## Configuration
 
@@ -66,6 +67,7 @@ fallback = "./notfound.html"   # fallback file, optional
 
 ## Example
 
-In the folder `/example` is an example setup to run the webserver as a docker container. 
-The service get orchestrated with docker compose where the directory get mounted and the environment points to the configuration. 
+In the folder `/example` is an example setup to run the webserver as a docker container.
+The service get orchestrated with docker compose where the directory get mounted and the environment points to the
+configuration. 
 

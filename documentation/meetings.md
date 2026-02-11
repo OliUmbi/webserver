@@ -115,8 +115,7 @@
 - deadlines
     - 12.02. goal validation (pass/fail)
 - feedback
-  - final meeting 11.02.
-
+    - final meeting 11.02.
 
 ## 10.02. Wednesday
 

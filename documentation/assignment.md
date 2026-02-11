@@ -30,9 +30,9 @@ Main objectives:
 - Docker deployment
 - Terminal user interface to visualize load
 
-To make it more challenging, the implementation is in Rust (which I'm not familiar). 
+To make it more challenging, the implementation is in Rust (which I'm not familiar).
 Additionally usage of external libraries should be kept to a minimum.
-Correctness and performance are a secondary priority that is demonstrated by a small bench suite. 
+Correctness and performance are a secondary priority that is demonstrated by a small bench suite.
 
 ### Week 1
 

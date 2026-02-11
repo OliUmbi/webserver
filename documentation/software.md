@@ -15,7 +15,8 @@ Secondary Stakeholder: System Maintainer / Operator
 - Needs observability via logs and telemetry
 - Expects simple configuration and reproducible setup
 
-The system is therefore designed for technically skilled users who value transparency, configurability and architectural clarity over abstraction.
+The system is therefore designed for technically skilled users who value transparency, configurability and architectural
+clarity over abstraction.
 
 ## Functional Requirements
 
@@ -65,10 +66,12 @@ The server is setup into to following threads:
 - Workers (Configurable, default 4)
     - Handle the connection from dispatcher and handles it to completion until taking the next connection
 
-This setup is to allow the acceptor to always accept requests while the dispatcher works out the strategy to distribute the workload.
+This setup is to allow the acceptor to always accept requests while the dispatcher works out the strategy to distribute
+the workload.
 In the future the round-robin setup could be replaced with a different strategy more fit for the use-case.
 The implementation is not asynchronous and quite expensive.
-To minimize the number of external libraries something like Tokio was deliberately not used, but would be advantages in this application.
+To minimize the number of external libraries something like Tokio was deliberately not used, but would be advantages in
+this application.
 The channels distributing the connections are synchronous and have a limit configured (default 1024).
 This setup creates backpressure and starts rejecting connections if the system is overloaded.
 
@@ -78,7 +81,8 @@ Connections get parsed into a HTTP Request model.
 The connection is read in incremental steps to validate each part bevor continuing.
 First the request line gets read and checked if it is valid / supported.
 The headers get read and the leftover bytes of the head get saved in the body.
-To conserve resources the body is only read when necessary but could be handled cleaner in the event of reverse proxy handling.
+To conserve resources the body is only read when necessary but could be handled cleaner in the event of reverse proxy
+handling.
 Requests get pared in the same model, sharing implementation for headers and body.
 
 ### validation
