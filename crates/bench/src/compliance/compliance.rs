@@ -57,7 +57,7 @@ fn run_case(cases: Vec<Case>, configuration: Arc<Configuration>, logger: Arc<Log
                     if case.status.contains(&response.status_code) {
                         logger.success(case.name);
                     } else {
-                        logger.failed(format!("{}: invalid status code {} expected {:?}", case.name, response.status_code, case.status));
+                        logger.failed_details(case.name, vec![format!("Invalid status code expected {:?} got {}", case.status, response.status_code)]);
                     }
                 }
                 Err(error) => {

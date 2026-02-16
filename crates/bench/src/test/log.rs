@@ -74,6 +74,16 @@ impl Log {
             details: details.into_iter().map(Into::into).collect(),
         }
     }
+
+    pub fn get_message(&self) -> String {
+        let symbol = match self.log_type {
+            LogType::Success => "✔",
+            LogType::Failed => "✘",
+            LogType::Information => "–",
+        };
+
+        format!("{} {}", symbol, self.message)
+    }
 }
 
 pub enum LogType {

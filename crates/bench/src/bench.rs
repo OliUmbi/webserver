@@ -104,7 +104,7 @@ impl Bench {
 
         self.render_tests(frame, area_tests);
         self.render_logs(frame, area_logs);
-        self.render_configuration(frame, area_body);
+        // self.render_configuration(frame, area_body);
         self.render_commands(frame, area_foot);
     }
 
@@ -150,10 +150,10 @@ impl Bench {
                 };
 
                 let mut lines = Vec::new();
-                lines.push(Line::from(log.message.clone()));
+                lines.push(Line::from(log.get_message()));
                 log.details
                     .iter()
-                    .for_each(|detail| lines.push(Line::from(detail.clone())));
+                    .for_each(|detail| lines.push(Line::from(format!("  {}", detail))));
 
                 ListItem::new(Text::from(lines)).style(style)
             })
